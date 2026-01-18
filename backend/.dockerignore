@@ -1,0 +1,96 @@
+# ==============================================
+# Archivos y directorios que serán ignorados por Docker
+# durante la construcción de la imagen
+# ==============================================
+
+# Directorio de construcción de Maven
+target/
+!target/*.jar
+
+# Directorios de node
+node_modules/
+npm-debug.log
+dist/
+coverage/
+
+# Directorios de desarrollo
+.git/
+.github/
+.gitignore
+.mvn/
+mvnw
+mvnw.cmd
+
+# ============ Archivos de IDEs ============
+# Configuración de IntelliJ IDEA
+.idea/
+*.iws
+*.iml
+*.ipr
+
+# Configuración de Eclipse
+.settings/
+.project
+.classpath
+
+# Configuración de VS Code
+.vscode/
+
+# ============ Archivos de registro y debug ============
+*.log
+*.log.*
+debug/
+*.debug
+
+# ============ Archivos del sistema ============
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+
+# ============ Archivos de entorno y configuración ============
+.env
+.env.local
+.env.*
+!.env.example
+
+# Archivos de configuración local
+*.properties
+*.yml
+*.yaml
+!application*.yml
+!application*.yaml
+!bootstrap*.yml
+!bootstrap*.yaml
+
+# Archivos de documentación y otros
+README.md
+LICENSE
+docs/
+*.md
+*.txt
+*.pdf
+
+# Archivos de prueba
+**/test/
+**/tests/
+**/__tests__/
+**/coverage/
+jest.config.js
+*.spec.*
+*.test.*
+
+# Archivos de construcción y caché
+.gradle/
+build/
+out/
+bin/
+*.class
+*.jar
+!target/*.jar
+
+# Archivos temporales
+tmp/
+temp/
+*.tmp
+*.temp
