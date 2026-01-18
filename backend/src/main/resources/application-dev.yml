@@ -1,0 +1,24 @@
+spring:
+  datasource:
+    url: ${DATASOURCE_URL}
+    username: ${DATASOURCE_USERNAME}
+    password: ${DATASOURCE_PASSWORD}
+  jpa:
+    hibernate:
+      ddl-auto: update
+
+# Configuración JWT
+jwt:
+  secret: jwtSecretKey123456789devSecretKey123456789devSecretKey123456789
+  expiration: 3600000  # 1 hora en milisegundos
+
+# Configuración específica de Swagger para desarrollo
+springdoc:
+  swagger-ui:
+    enabled: true
+    display-request-duration: true
+    display-operation-id: true
+    default-models-expand-depth: 2
+    default-model-expand-depth: 2
+  api-docs:
+    enabled: true

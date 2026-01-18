@@ -1,0 +1,19 @@
+spring:
+  application:
+    name: bookshop
+  datasource:
+    driver-class-name: org.postgresql.Driver
+
+server:
+  port: 8282
+
+# Configuración de SpringDoc OpenAPI (Swagger)
+springdoc:
+  api-docs:
+    path: /api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    operationsSorter: method
+    tagsSorter: alpha
+    try-it-out-enabled: true
+  show-actuator: false

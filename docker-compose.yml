@@ -1,0 +1,104 @@
+# =============================================================================
+# CONFIGURACIÓN DE DOCKER COMPOSE PARA APLICACIÓN ANGULAR
+# =============================================================================
+# Este archivo define los servicios, redes y volúmenes necesarios para ejecutar la
+# aplicación Angular en un entorno contenerizado usando Docker Compose.
+#
+# Características:
+# - Orquestación multi-contenedor
+# - Mapeo de puertos para acceso local
+# - Health checks para monitoreo
+# - Políticas de reinicio automático
+# - Montaje de volúmenes para logs
+# - Configuración de red personalizada
+# =============================================================================
+
+# =============================================================================
+# DEFINICIÓN DE SERVICIOS
+# =============================================================================
+# Los servicios son los contenedores que serán creados y gestionados por Docker Compose
+# Cada servicio puede tener su propia configuración, dependencias y recursos
+services:
+  # Servicio backend Spring Boot
+  bookshop-springboot:
+    build:
+      context: ../../../bookshop
+      dockerfile: Dockerfile
+    container_name: bookshop-springboot-app
+    environment:
+      - DATASOURCE_URL=${DATASOURCE_URL}
+      - DATASOURCE_USERNAME=${DATASOURCE_USERNAME}
+      - DATASOURCE_PASSWORD=${DATASOURCE_PASSWORD}
+      - SPRING_PROFILES_ACTIVE=${SPRING_PROFILES_ACTIVE}
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+      - JWT_SECRET_KEY=${JWT_SECRET_KEY}
+      - JWT_EXPIRATION=${JWT_EXPIRATION}
+    ports:
+      - '8282:8282'
+    networks:
+      - bookshop-network
+    security_opt:
+      - no-new-privileges:true
+    tmpfs:
+      - /tmp
+    healthcheck:
+      test: ['CMD', 'curl', '-f', 'http://localhost:8282/actuator/health']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+    restart: unless-stopped
+
+  # Servicio frontend Angular
+  bookshop-angular:
+    build:
+      context: ../../../bookshop-angular
+      dockerfile: Dockerfile
+    container_name: bookshop-angular-app
+    ports:
+      - '8080:80'
+    restart: unless-stopped
+    environment:
+      - NODE_ENV=production
+    volumes:
+      - ./logs:/var/log/nginx
+    networks:
+      - bookshop-network
+    depends_on:
+      bookshop-springboot:
+        condition: service_healthy
+    security_opt:
+      - no-new-privileges:true
+    tmpfs:
+      - /tmp
+    healthcheck:
+      test:
+        [
+          'CMD',
+          'wget',
+          '--quiet',
+          '--tries=1',
+          '--spider',
+          'http://localhost:80',
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
+
+# =============================================================================
+# DEFINICIÓN DE REDES
+# =============================================================================
+# Las redes permiten que los contenedores se comuniquen entre sí
+# Esto es útil cuando tienes múltiples servicios (app, base de datos, caché, etc.)
+networks:
+  # =============================================================================
+  # RED PERSONALIZADA PARA LA APLICACIÓN
+  # =============================================================================
+  # Una red personalizada para los servicios de nuestra aplicación
+  # Esto proporciona aislamiento y permite descubrimiento de servicios
+  bookshop-network:
+    # Tipo de driver de red
+    # "bridge" es el driver por defecto para redes de un solo host
+    # Otras opciones: "host", "overlay", "macvlan", "none"
+    driver: bridge
