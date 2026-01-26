@@ -49,6 +49,11 @@ public class User implements UserDetails {
   private Set<Role> roles;
 
   @Override
+  public String getUsername() {
+    return username;
+  }
+
+  @Override
   public Collection<? extends GrantedAuthority> getAuthorities() {
     return roles.stream()
         .map(role -> new SimpleGrantedAuthority(role.getName()))

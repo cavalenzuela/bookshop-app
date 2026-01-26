@@ -9,8 +9,8 @@ spring:
 
 # Configuración JWT
 jwt:
-  secret: jwtSecretKey123456789devSecretKey123456789devSecretKey123456789
-  expiration: 3600000  # 1 hora en milisegundos
+  secret: ${JWT_SECRET}
+  expiration: ${JWT_EXPIRATION:3600000}
 
 # Configuración específica de Swagger para desarrollo
 springdoc:

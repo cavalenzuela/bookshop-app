@@ -1,8 +1,10 @@
-# Bookshop - Aplicación Spring Boot
+# Bookshop - Backend con Spring Boot   
 
 ## Descripción del Proyecto
 
-Bookshop es una aplicación web desarrollada con Spring Boot que implementa un sistema de gestión de una librería. La aplicación permite realizar operaciones CRUD (Crear, Leer, Actualizar, Eliminar) sobre un catálogo de libros, con funcionalidades de autenticación y autorización.
+Bookshop es una aplicación web desarrollada con Spring Boot que implementa un sistema de gestión de una librería.
+La aplicación permite realizar operaciones CRUD (Crear, Leer, Actualizar, Eliminar) 
+sobre un catálogo de libros, con funcionalidades de autenticación y autorización.
 
 ## Características Principales
 
@@ -26,19 +28,25 @@ Bookshop es una aplicación web desarrollada con Spring Boot que implementa un s
 ## Estructura del Proyecto
 
 ```
-bookshop/
+backend/
 ├── src/                    # Código fuente de la aplicación
-│   └── main/
-│       ├── java/com/bookshop/
-│       │   ├── config/              # Configuraciones (Security, OpenAPI, etc.)
-│       │   ├── controller/          # Controladores REST
-│       │   ├── domain/              # Entidades y DTOs
-│       │   ├── repositories/        # Repositorios JPA
-│       │   ├── services/            # Lógica de negocio
-│       │   └── security/            # Configuración de seguridad JWT
-│       └── resources/
-│           ├── application.yml        # Configuración principal
-│           └── application-dev.yml    # Configuración de desarrollo
+│   ├── main/
+│   │   ├── java/com/bookshop/
+│   │   │   ├── config/              # Configuraciones (Security, OpenAPI, etc.)
+│   │   │   ├── controller/          # Controladores REST
+│   │   │   ├── domain/              # Entidades y DTOs
+│   │   │   ├── mappers/             # Mapeadores de entidades (ModelMapper)
+│   │   │   ├── repositories/        # Repositorios JPA
+│   │   │   ├── services/            # Lógica de negocio
+│   │   │   └── security/            # Configuración de seguridad JWT
+│   │   └── resources/
+│   │       ├── application.yml          # Configuración principal
+│   │       ├── application-dev.yml      # Configuración de desarrollo
+│   │       └── application-prod.yml     # Configuración de producción
+│   └── test/               # Tests unitarios e integración
+│       └── java/com/bookshop/
+│           ├── controller/          # Tests de controladores
+│           └── ...
 ├── target/                # Archivos compilados (generado automáticamente)
 ├── .dockerignore         # Archivos ignorados por Docker
 ├── Dockerfile            # Configuración para construir la imagen Docker
@@ -46,10 +54,7 @@ bookshop/
 └── README.md            # Este archivo
 ```
 
-## Repositorios Relacionados
-
-La configuración Docker completa para este proyecto se encuentra en un repositorio separado:
-- **Repositorio de Configuración Docker**: [bookshop-config](https://github.com/cavalenzuela/bookshop-config)
+**Nota**: El archivo `.env` se encuentra en la carpeta superior `bookshop-app/` para compartir configuraciones entre servicios.
 
 ## Configuración del Proyecto
 
@@ -67,6 +72,16 @@ El proyecto utiliza archivos YAML para la configuración, siguiendo las mejores 
    - Configuración de base de datos local
    - Configuración específica de Swagger para desarrollo
    - Configuración de JWT y otros parámetros sensibles
+
+3. **application-prod.yml**:
+   - Contiene configuración específica para producción
+   - Variables de entorno para bases de datos en producción
+   - Configuración de seguridad optimizada para producción
+   - Deshabilitación de Swagger en producción
+
+### Variables de Entorno
+
+El archivo `.env` se encuentra en la **carpeta superior** (`bookshop-app/.env`) para compartir configuraciones entre múltiples servicios. Este archivo contiene las variables sensibles necesarias para la aplicación.
 
 ## Documentación de la API con Swagger
 
@@ -92,7 +107,7 @@ La aplicación incluye documentación interactiva de la API utilizando **SpringD
 
 ## Desarrollo Local
 
-### Prerrequisitos para Desarrollo
+### Requisitos para Desarrollo
 - Java 17 o superior
 - Maven 3.6+
 - PostgreSQL ejecutándose en localhost:5434
@@ -102,8 +117,9 @@ La aplicación incluye documentación interactiva de la API utilizando **SpringD
 
 1. **Clonar el repositorio**:
 ```bash
-git clone https://github.com/cavalenzuela/bookshop.git
-cd bookshop
+git clone https://github.com/cavalenzuela/bookshop-app.git
+cd bookshop-app
+cd backend
 ```
 
 2. **Compilar el proyecto**:
@@ -141,32 +157,82 @@ Para construir la imagen Docker del proyecto, ejecuta desde la raíz del proyect
 docker build -t bookshop-springboot -f Dockerfile .
 ```
 
-### 2. Configuración del Entorno
+### 2. Ejecución del Contenedor
 
-Asegúrate de tener configuradas todas las variables de entorno necesarias en tu sistema.
+#### Opción A: Ejecución Básica (para pruebas locales)
 
-### 3. Clonar los repositorios
+```powershell
+  docker run -d --name bookshop-springboot-app -p 8282:8282 --env-file ../\.env bookshop-springboot
+```
+
+**Explicación de variables de entorno:**
+- `SPRING_PROFILES_ACTIVE=dev`: Activa el perfil de desarrollo (carga `application-dev.yml`)
+- `JWT_SECRET`: Clave secreta para firmar tokens JWT (cambiar en producción)
+- `JWT_EXPIRATION`: Tiempo de expiración del token en milisegundos (3600000 = 1 hora)
+- `DATASOURCE_URL`: URL de conexión a PostgreSQL
+- `DATASOURCE_USERNAME`: Usuario de la base de datos
+- `DATASOURCE_PASSWORD`: Contraseña de la base de datos
+- `host.docker.internal`: Alias especial que permite al contenedor acceder a localhost del host
+
+**Nota**: El archivo `.env` está ubicado en `bookshop-app/.env` (carpeta superior)
+
+#### Opción B: Con Docker Compose (recomendado para producción)
+
+El archivo `docker-compose.yml` ya está disponible en la **carpeta superior** (`bookshop-app/docker-compose.yml`). Este archivo contiene la configuración completa para ejecutar tanto la base de datos PostgreSQL como la aplicación Spring Boot.
+
+Para ejecutar con Docker Compose desde la carpeta raíz del proyecto (`bookshop-app/`):
 
 ```bash
-# Clonar el repositorio principal
-git clone https://github.com/cavalenzuela/bookshop.git
+docker-compose up -d
+```
 
-# Clonar el repositorio de configuración Docker (contiene docker-compose.yml)
-git clone https://github.com/cavalenzuela/bookshop-config.git
+El archivo `docker-compose.yml` incluye:
+- Servicio **postgres**: Base de datos PostgreSQL 15
+- Servicio **bookshop**: Aplicación Spring Boot
+- Red compartida entre servicios
+- Volumen persistente para los datos de la base de datos
+
+### 3. Verificar que el contenedor está corriendo
+
+```powershell
+# Ver contenedores en ejecución
+docker ps
+
+# Ver logs de la aplicación
+docker logs -f bookshop
+
+# Detener el contenedor
+docker stop bookshop
 ```
 
 ### 4. Acceder a la aplicación
 
-Una vez que la aplicación esté en ejecución, podrás acceder a:
+Una vez que la aplicación esté corriendo:
+- **API REST**: http://localhost:8282
+- **Swagger UI**: http://localhost:8282/swagger-ui.html
+- **API Docs**: http://localhost:8282/api-docs
 
-- **Aplicación:** http://localhost:8282
-- **Swagger UI:** http://localhost:8282/swagger-ui.html
+### 5. Configuración del Entorno
+
+**Variables de entorno requeridas:**
+- `SPRING_PROFILES_ACTIVE`: `dev` (desarrollo) o `prod` (producción)
+- `JWT_SECRET`: Clave secreta para JWT (mínimo 32 caracteres en producción)
+- `JWT_EXPIRATION`: Tiempo de expiración en milisegundos
+- `DATASOURCE_URL`: URL de PostgreSQL
+- `DATASOURCE_USERNAME`: Usuario de BD
+- `DATASOURCE_PASSWORD`: Contraseña de BD
+
+**Recomendaciones de seguridad:**
+- Cambiar `JWT_SECRET` en producción (usar variable secreta segura)
+- No usar credenciales hardcodeadas en imágenes
+- Usar secretos de Docker/Kubernetes para información sensible
+- Usar PostgreSQL en un contenedor separado o servicio administrado
 
 ## Tecnologías Utilizadas
 
 ### Backend
 - **Spring Boot 3.5.0** - Framework principal
-- **Java 17** - Lenguaje de programación
+- **Java 25** - Lenguaje de programación
 - **Spring Security** - Autenticación y autorización
 - **Spring Data JPA** - Persistencia de datos
 - **PostgreSQL** - Base de datos relacional

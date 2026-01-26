@@ -1,6 +1,11 @@
 # Primera etapa: Construcción de la aplicación
-# Usa una imagen de Maven con Java 17 para compilar la aplicación
-FROM maven:3.9.6-eclipse-temurin-17 AS build
+# Usa Java 21 JDK para compilar la aplicación con Spring Boot 3.4.1
+FROM eclipse-temurin:21-jdk AS build
+
+# Instalar Maven desde repositorios de Debian
+USER root
+RUN apt-get update && apt-get install -y maven --no-install-recommends \
+  && rm -rf /var/lib/apt/lists/*
 
 # Establece el directorio de trabajo dentro del contenedor
 WORKDIR /app
@@ -16,8 +21,8 @@ COPY src ./src
 RUN mvn clean package -DskipTests
 
 # Segunda etapa: Imagen de ejecución
-# Usa una imagen ligera con solo el JRE de Java 17
-FROM eclipse-temurin:17-jre
+# Usar Java 21 JRE para ejecutar la aplicación (versión más ligera, solo runtime)
+FROM eclipse-temurin:21-jre
 
 # Configuración de usuario no-root
 # Crear un usuario sin privilegios

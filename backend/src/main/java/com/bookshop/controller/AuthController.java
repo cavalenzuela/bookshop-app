@@ -18,7 +18,7 @@ import com.bookshop.services.UserService;
  * Proporciona endpoints para el registro, inicio y cierre de sesión de usuarios.
  */
 @RestController
-@RequestMapping("/auth")
+@RequestMapping("/api/auth")
 public class AuthController {
   private final AuthService authService;
   private final UserService userService;

@@ -26,12 +26,11 @@ services:
       dockerfile: Dockerfile
     container_name: bookshop-springboot-app
     environment:
+      - SPRING_PROFILES_ACTIVE=dev
       - DATASOURCE_URL=${DATASOURCE_URL}
       - DATASOURCE_USERNAME=${DATASOURCE_USERNAME}
       - DATASOURCE_PASSWORD=${DATASOURCE_PASSWORD}
-      - SPRING_PROFILES_ACTIVE=${SPRING_PROFILES_ACTIVE}
-      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
-      - JWT_SECRET_KEY=${JWT_SECRET_KEY}
+      - JWT_SECRET=${JWT_SECRET}
       - JWT_EXPIRATION=${JWT_EXPIRATION}
     ports:
       - '8282:8282'
