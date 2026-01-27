@@ -44,22 +44,10 @@ RUN npm run build
 # Usamos nginx:alpine por ser un servidor web ligero y seguro
 FROM nginx:alpine
 
-# Crear un usuario no-root
-RUN addgroup -S appgroup && adduser -S appuser -G appgroup
-
 # Copia la aplicación construida desde la etapa de construcción
 # Los archivos construidos se copian al directorio raíz web por defecto de nginx
 # Esto incluye todos los archivos HTML, CSS, JS y recursos necesarios para ejecutar la aplicación
 COPY --from=build /app/dist/bookshop-angular/browser /usr/share/nginx/html
-
-# Establecer los permisos correctos
-RUN chown -R appuser:appgroup /usr/share/nginx/html && \
-    chown -R appuser:appgroup /var/cache/nginx && \
-    chown -R appuser:appgroup /var/log/nginx && \
-    chown -R appuser:appgroup /etc/nginx/conf.d
-
-# Cambiar al usuario no-root
-USER appuser
 
 # Copia nuestra configuración personalizada de nginx
 # Esta configuración está optimizada para SPAs de Angular con soporte adecuado de rutas

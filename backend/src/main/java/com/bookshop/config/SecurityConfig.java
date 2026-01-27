@@ -50,15 +50,16 @@ public class SecurityConfig {
                 "/v3/api-docs/**",
                 "/api-docs/**",
                 "/swagger-resources/**",
-                "/webjars/**"
-            ).permitAll()
+                "/webjars/**")
+            .permitAll()
 
-            // 3. Todo lo demás (authors, books, categories) requiere Token JWT
-            .anyRequest().authenticated()
-        )
+            // 3. Actuator endpoints para healthcheck (Públicos)
+            .requestMatchers("/actuator/health/**").permitAll()
+
+            // 4. Todo lo demás (authors, books, categories) requiere Token JWT
+            .anyRequest().authenticated())
         .sessionManagement(session -> session
-            .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-        )
+            .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
         // Añadimos nuestro filtro JWT antes del filtro de autenticación estándar
         .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 

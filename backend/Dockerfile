@@ -24,6 +24,10 @@ RUN mvn clean package -DskipTests
 # Usar Java 21 JRE para ejecutar la aplicación (versión más ligera, solo runtime)
 FROM eclipse-temurin:21-jre
 
+# Instalar curl para el healthcheck
+RUN apt-get update && apt-get install -y curl --no-install-recommends \
+  && rm -rf /var/lib/apt/lists/*
+
 # Configuración de usuario no-root
 # Crear un usuario sin privilegios
 # --system: Crea un usuario del sistema (sin shell de login)
@@ -32,14 +36,17 @@ FROM eclipse-temurin:21-jre
 # --group: Crea un grupo con el mismo nombre que el usuario
 RUN adduser --system --no-create-home --group appuser
 
-# Que el contenedor se ejecute con este usuario en lugar de root
-USER appuser
-
 # Establece el directorio de trabajo
 WORKDIR /app
 
 # Copia el archivo JAR desde la etapa de construcción
 COPY --from=build /app/target/*.jar app.jar
+
+# Ajustar permisos del archivo JAR para el usuario no-root
+RUN chown appuser:appuser app.jar
+
+# Que el contenedor se ejecute con este usuario en lugar de root
+USER appuser
 
 # Expone el puerto que usa la aplicación
 EXPOSE 8282

@@ -22,7 +22,7 @@ services:
   # Servicio backend Spring Boot
   bookshop-springboot:
     build:
-      context: ../../../bookshop
+      context: ./backend
       dockerfile: Dockerfile
     container_name: bookshop-springboot-app
     environment:
@@ -41,7 +41,7 @@ services:
     tmpfs:
       - /tmp
     healthcheck:
-      test: ['CMD', 'curl', '-f', 'http://localhost:8282/actuator/health']
+      test: [ 'CMD', 'curl', '-f', 'http://localhost:8282/actuator/health' ]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -51,7 +51,7 @@ services:
   # Servicio frontend Angular
   bookshop-angular:
     build:
-      context: ../../../bookshop-angular
+      context: ./frontend
       dockerfile: Dockerfile
     container_name: bookshop-angular-app
     ports:
@@ -66,20 +66,8 @@ services:
     depends_on:
       bookshop-springboot:
         condition: service_healthy
-    security_opt:
-      - no-new-privileges:true
-    tmpfs:
-      - /tmp
     healthcheck:
-      test:
-        [
-          'CMD',
-          'wget',
-          '--quiet',
-          '--tries=1',
-          '--spider',
-          'http://localhost:80',
-        ]
+      test: [ 'CMD', 'wget', '--quiet', '--tries=1', '--spider', 'http://127.0.0.1:80' ]
       interval: 10s
       timeout: 5s
       retries: 5

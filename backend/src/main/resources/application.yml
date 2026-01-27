@@ -17,3 +17,13 @@ springdoc:
     tagsSorter: alpha
     try-it-out-enabled: true
   show-actuator: false
+
+# Configuración de Spring Boot Actuator
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
+  endpoint:
+    health:
+      show-details: when-authorized
