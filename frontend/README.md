@@ -32,11 +32,13 @@ ng serve
 - La recarga en caliente está habilitada para retroalimentación instantánea durante el desarrollo
 
 ## ARQUITECTURA DE LA APLICACIÓN
-# Esta aplicación utiliza la arquitectura de componentes standalone de Angular 20, proporcionando:
-# - 100% componentes standalone (sin NgModules)
-# - Carga perezosa con loadComponent()
-# - Inyección de dependencias moderna
-# - Tamaños de bundle optimizados
+# Esta aplicación utiliza la arquitectura moderna de Angular 20, proporcionando:
+# - **Signals**: Gestión de estado reactiva y eficiente.
+# - **Zoneless**: Detección de cambios sin `zone.js` para mejor rendimiento.
+# - **New Control Flow**: Uso de `@if`, `@for` y `@switch` para plantillas más limpias.
+# - **Standalone Components**: 100% de componentes standalone (sin NgModules).
+# - **Lazy Loading**: Carga perezosa con `loadComponent()`.
+# - **Inyección de Dependencias**: Uso de `inject()` para una arquitectura moderna.
 
 ### Componentes Standalone
 Todos los componentes están construidos como componentes standalone con plantillas y estilos inline:

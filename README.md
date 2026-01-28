@@ -1,11 +1,11 @@
 # 📚 Bookshop
 
-Aplicación full-stack de gestión de librería para práctica de desarrollo.
+Aplicación full-stack de gestión de librería de última generación.
 
 ## 🛠️ Stack Tecnológico
 
-- **Backend**: Java 17 + Spring Boot 3.x
-- **Frontend**: Angular 17+
+- **Backend**: Java 21 + Spring Boot 3.4.x (Virtual Threads, Records)
+- **Frontend**: Angular 20 (Signals, Zoneless, Control Flow)
 - **Base de datos**: PostgreSQL 16
 - **Containerización**: Docker + Docker Compose
 
@@ -28,8 +28,8 @@ bookshop/
 ### Ejecutar la aplicación
 ```bash
 # Clonar el repositorio
-git clone https://github.com/tu-usuario/bookshop.git
-cd bookshop
+git clone https://github.com/cavalenzuela/bookshop-app.git
+cd bookshop-app
 
 # Iniciar todos los servicios
 docker-compose up --build
@@ -38,7 +38,8 @@ docker-compose up --build
 ### Acceder a la aplicación
 
 - **Frontend**: http://localhost:4200
-- **Backend API**: http://localhost:8080
+- **Backend API**: http://localhost:8282
+- **Swagger UI**: http://localhost:8282/swagger-ui.html
 - **Base de datos**: localhost:5432
 
 ## 🔧 Comandos Útiles
@@ -67,14 +68,14 @@ docker-compose down -v
 ### Backend
 ```bash
 cd backend
-./mvnw spring-boot:run
+mvn spring-boot:run
 ```
 
 ### Frontend
 ```bash
 cd frontend
 npm install
-ng serve
+npm start
 ```
 
 ## 🗄️ Base de Datos
@@ -88,12 +89,13 @@ El script `database/init.sql` se ejecuta automáticamente al iniciar el contened
 
 ⚠️ **Nota**: Cambiar credenciales en producción.
 
-## 📚 Funcionalidades
+## 📚 Funcionalidades Implementadas
 
-- [ ] CRUD de libros
-- [ ] Gestión de categorías
-- [ ] Sistema de búsqueda
-- [ ] Carrito de compras
+- [x] CRUD completo de Libros, Autores y Categorías.
+- [x] Autenticación y Autorización basada en JWT.
+- [x] Arquitectura moderna con Java Records y Angular Signals (Zoneless).
+- [x] Manejo global de excepciones y validaciones de API.
+- [x] Soporte para Virtual Threads (Project Loom) en el backend.
 
 ## 🤝 Contribución
 
@@ -102,8 +104,6 @@ Este es un proyecto de práctica personal. Sugerencias son bienvenidas.
 ## 📄 Licencia
 
 MIT License - Proyecto educativo
-
-
 
 ## 🐛 Troubleshooting
 
@@ -123,6 +123,10 @@ Cambiar puertos en `docker-compose.yml`
 ## 🎯 Roadmap
 
 - [x] Setup inicial
-- [ ] Autenticación JWT
-- [ ] Paginación
-- [ ] Filtros avanzados
+- [x] Autenticación JWT integrada
+- [x] Migración a **Java 21** (Records + Virtual Threads)
+- [x] Migración a **Angular 20** (Signals + Zoneless mode)
+- [x] Implementación de **Validaciones** y **Global Exception Handler**
+- [ ] Paginación de resultados de la API
+- [ ] Filtros avanzados de búsqueda
+- [ ] Carrito de compras funcional

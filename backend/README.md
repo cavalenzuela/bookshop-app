@@ -231,17 +231,18 @@ Una vez que la aplicación esté corriendo:
 ## Tecnologías Utilizadas
 
 ### Backend
-- **Spring Boot 3.5.0** - Framework principal
-- **Java 25** - Lenguaje de programación
+- **Spring Boot 3.4.1** - Framework principal
+- **Java 21** - Lenguaje de programación (Records, Virtual Threads)
 - **Spring Security** - Autenticación y autorización
 - **Spring Data JPA** - Persistencia de datos
 - **PostgreSQL** - Base de datos relacional
 - **JWT (JSON Web Tokens)** - Autenticación stateless
-- **ModelMapper** - Mapeo entre entidades y DTOs
+- **ModelMapper (manual)** - Mapeo moderno entre entidades y Records inmutables
+- **Jakarta Validation** - Validaciones robustas en la capa de API
 
-### Documentación y Testing
-- **SpringDoc OpenAPI 2.2.0** - Documentación interactiva de la API
-- **Swagger UI** - Interfaz web para probar endpoints
+### Documentación y Monitoreo
+- **SpringDoc OpenAPI 2.2.0** - Documentación interactiva de la API (Swagger UI)
+- **Spring Boot Actuator** - Monitoreo y healthchecks
 - **Spring Boot Test** - Framework de testing
 
 ### Herramientas de Desarrollo
