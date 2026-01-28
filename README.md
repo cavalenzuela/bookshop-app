@@ -1,6 +1,6 @@
 # 📚 Bookshop
 
-Aplicación full-stack de gestión de librería de última generación.
+Aplicación full-stack de gestión de librería.
 
 ## 🛠️ Stack Tecnológico
 
@@ -80,14 +80,7 @@ npm start
 
 ## 🗄️ Base de Datos
 
-El script `database/init.sql` se ejecuta automáticamente al iniciar el contenedor de PostgreSQL.
-
-**Credenciales por defecto:**
-- Usuario: `admin`
-- Contraseña: `admin123`
-- Base de datos: `bookshop`
-
-⚠️ **Nota**: Cambiar credenciales en producción.
+El script `database/init.sql` genera las tablas en PostgreSQL.
 
 ## 📚 Funcionalidades Implementadas
 
@@ -96,37 +89,3 @@ El script `database/init.sql` se ejecuta automáticamente al iniciar el contened
 - [x] Arquitectura moderna con Java Records y Angular Signals (Zoneless).
 - [x] Manejo global de excepciones y validaciones de API.
 - [x] Soporte para Virtual Threads (Project Loom) en el backend.
-
-## 🤝 Contribución
-
-Este es un proyecto de práctica personal. Sugerencias son bienvenidas.
-
-## 📄 Licencia
-
-MIT License - Proyecto educativo
-
-## 🐛 Troubleshooting
-
-### El contenedor de base de datos no inicia
-```bash
-docker-compose down -v
-docker-compose up --build
-```
-
-### Puerto ya en uso
-Cambiar puertos en `docker-compose.yml`
-
-## 📸 Screenshots
-
-![Home](docs/screenshots/home.png)
-
-## 🎯 Roadmap
-
-- [x] Setup inicial
-- [x] Autenticación JWT integrada
-- [x] Migración a **Java 21** (Records + Virtual Threads)
-- [x] Migración a **Angular 20** (Signals + Zoneless mode)
-- [x] Implementación de **Validaciones** y **Global Exception Handler**
-- [ ] Paginación de resultados de la API
-- [ ] Filtros avanzados de búsqueda
-- [ ] Carrito de compras funcional
