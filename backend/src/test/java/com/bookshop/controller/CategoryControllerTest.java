@@ -41,10 +41,9 @@ class CategoryControllerTest {
 
     @BeforeEach
     void setUp() {
-        categoryDto = CategoryDto.builder()
-                .id(1L)
-                .name("Test Category")
-                .build();
+        categoryDto = new CategoryDto(
+                1L,
+                "Test Category");
 
         categoryEntity = CategoryEntity.builder()
                 .id(1L)
@@ -123,4 +122,4 @@ class CategoryControllerTest {
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
         verify(categoryService).deleteCategory(1L);
     }
-} 
+}

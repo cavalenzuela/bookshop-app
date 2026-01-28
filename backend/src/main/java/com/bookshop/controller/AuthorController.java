@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,7 +15,7 @@ import com.bookshop.mappers.Mapper;
 import com.bookshop.services.AuthorService;
 
 @RestController
-@RequestMapping("/api/authors") // Ruta base para todos los métodos
+@RequestMapping("/api/authors")
 public class AuthorController {
 
   private final AuthorService authorService;
@@ -29,7 +30,7 @@ public class AuthorController {
    * POST /api/authors
    */
   @PostMapping
-  public ResponseEntity<AuthorDto> createAuthor(@RequestBody AuthorDto author) {
+  public ResponseEntity<AuthorDto> createAuthor(@Valid @RequestBody AuthorDto author) {
     AuthorEntity authorEntity = authorMapper.mapFrom(author);
     AuthorEntity savedAuthorEntity = authorService.save(authorEntity);
     return new ResponseEntity<>(authorMapper.mapTo(savedAuthorEntity), HttpStatus.CREATED);
@@ -64,14 +65,14 @@ public class AuthorController {
   @PutMapping("/{id}")
   public ResponseEntity<AuthorDto> fullUpdateAuthor(
       @PathVariable("id") Long id,
-      @RequestBody AuthorDto authorDto) {
+      @Valid @RequestBody AuthorDto authorDto) {
 
-    if(!authorService.isExists(id)) {
+    if (!authorService.isExists(id)) {
       return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
-    authorDto.setId(id);
     AuthorEntity authorEntity = authorMapper.mapFrom(authorDto);
+    authorEntity.setId(id); // Set ID on the entity, not the record
     AuthorEntity savedAuthorEntity = authorService.save(authorEntity);
     return new ResponseEntity<>(authorMapper.mapTo(savedAuthorEntity), HttpStatus.OK);
   }
@@ -82,13 +83,15 @@ public class AuthorController {
   @PatchMapping("/{id}")
   public ResponseEntity<AuthorDto> partialUpdate(
       @PathVariable("id") Long id,
-      @RequestBody AuthorDto authorDto
-  ) {
-    if(!authorService.isExists(id)) {
+      @RequestBody AuthorDto authorDto) {
+    if (!authorService.isExists(id)) {
       return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
     AuthorEntity authorEntity = authorMapper.mapFrom(authorDto);
+    // Para partial update, el servicio se encarga de mergear.
+    // Pero si authorEntity no tiene ID, el servicio necesita saber cuál actualizar.
+    // partialUpdate(id, authorEntity) ya recibe el ID por separado.
     AuthorEntity updatedAuthor = authorService.partialUpdate(id, authorEntity);
     return new ResponseEntity<>(authorMapper.mapTo(updatedAuthor), HttpStatus.OK);
   }

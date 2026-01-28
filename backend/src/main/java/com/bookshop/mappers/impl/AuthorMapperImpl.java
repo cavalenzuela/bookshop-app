@@ -19,7 +19,15 @@ public class AuthorMapperImpl implements Mapper<AuthorEntity, AuthorDto> {
 
     @Override
     public AuthorDto mapTo(AuthorEntity authorEntity) {
-        return modelMapper.map(authorEntity, AuthorDto.class);
+        if (authorEntity == null) {
+            return null;
+        }
+        return new AuthorDto(
+                authorEntity.getId(),
+                authorEntity.getName(),
+                authorEntity.getBirthDate(),
+                authorEntity.getNationality(),
+                authorEntity.getBiography());
     }
 
     @Override

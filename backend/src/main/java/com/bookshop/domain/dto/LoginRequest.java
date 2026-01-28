@@ -1,11 +1,9 @@
 package com.bookshop.domain.dto;
 
-import lombok.Getter;
-import lombok.Setter;
+import jakarta.validation.constraints.NotBlank;
 
-@Getter
-@Setter
-public class LoginRequest {
-  private String username;
-  private String password;
+public record LoginRequest(
+    @NotBlank(message = "Username is required") String username,
+
+    @NotBlank(message = "Password is required") String password) {
 }

@@ -1,22 +1,14 @@
 package com.bookshop.domain.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
-@Builder
-public class BookDto {
+public record BookDto(
+    @NotBlank(message = "ISBN is required") String isbn,
 
-  private String isbn;
+    @NotBlank(message = "Title is required") String title,
 
-  private String title;
+    @NotNull(message = "Author is required") AuthorDto author,
 
-  private AuthorDto author;
-
-  private CategoryDto category;
-
+    @NotNull(message = "Category is required") CategoryDto category) {
 }

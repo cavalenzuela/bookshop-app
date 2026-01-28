@@ -1,11 +1,10 @@
 package com.bookshop.domain.dto;
 
-import lombok.Getter;
-import lombok.Setter;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 
-@Getter
-@Setter
-public class UserRegisterRequest {
-  private String username;
-  private String password;
+public record UserRegisterRequest(
+    @NotBlank(message = "Username is required") String username,
+
+    @NotBlank(message = "Password is required") @Size(min = 6, message = "Password must be at least 6 characters") String password) {
 }

@@ -3,6 +3,9 @@ spring:
     name: bookshop
   datasource:
     driver-class-name: org.postgresql.Driver
+  threads:
+    virtual:
+      enabled: true
 
 server:
   port: 8282

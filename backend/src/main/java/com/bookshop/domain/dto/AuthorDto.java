@@ -1,25 +1,16 @@
 package com.bookshop.domain.dto;
 
+import jakarta.validation.constraints.NotBlank;
 import java.util.Date;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+public record AuthorDto(
+    Long id,
 
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
-@Builder
-public class AuthorDto {
+    @NotBlank(message = "Name is required") String name,
 
-  private Long id;
+    Date birthDate,
 
-  private String name;
+    String nationality,
 
-  private Date birthDate;
-
-  private String nationality;
-
-  private String biography;
+    String biography) {
 }

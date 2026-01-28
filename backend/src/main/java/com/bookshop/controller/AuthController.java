@@ -1,5 +1,6 @@
 package com.bookshop.controller;
 
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -15,7 +16,8 @@ import com.bookshop.services.UserService;
 
 /**
  * Controlador para la gestión de autenticación y autorización.
- * Proporciona endpoints para el registro, inicio y cierre de sesión de usuarios.
+ * Proporciona endpoints para el registro, inicio y cierre de sesión de
+ * usuarios.
  */
 @RestController
 @RequestMapping("/api/auth")
@@ -36,7 +38,7 @@ public class AuthController {
    * @return ResponseEntity con el token JWT y un mensaje de éxito
    */
   @PostMapping("/login")
-  public ResponseEntity<AuthResponse> login(@RequestBody LoginRequest request) {
+  public ResponseEntity<AuthResponse> login(@Valid @RequestBody LoginRequest request) {
     return ResponseEntity.ok(authService.login(request));
   }
 
@@ -61,7 +63,7 @@ public class AuthController {
    * @return ResponseEntity con un mensaje de éxito o error
    */
   @PostMapping("/register")
-  public ResponseEntity<String> register(@RequestBody UserRegisterRequest request) {
+  public ResponseEntity<String> register(@Valid @RequestBody UserRegisterRequest request) {
     userService.registerUser(request);
     return ResponseEntity.ok("User registered successfully!");
   }

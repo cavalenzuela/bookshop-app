@@ -20,11 +20,13 @@ public class UserServiceImpl implements UserService {
 
   /**
    * Constructor de la clase.
-   * @param userRepository Repositorio de usuarios
-   * @param roleRepository Repositorio de roles
+   * 
+   * @param userRepository  Repositorio de usuarios
+   * @param roleRepository  Repositorio de roles
    * @param passwordEncoder Codificador de contraseñas
    */
-  public UserServiceImpl(UserRepository userRepository, RoleRepository roleRepository, PasswordEncoder passwordEncoder) {
+  public UserServiceImpl(UserRepository userRepository, RoleRepository roleRepository,
+      PasswordEncoder passwordEncoder) {
     this.userRepository = userRepository;
     this.roleRepository = roleRepository;
     this.passwordEncoder = passwordEncoder;
@@ -32,19 +34,20 @@ public class UserServiceImpl implements UserService {
 
   /**
    * Registra un nuevo usuario en el sistema.
+   * 
    * @param request Objeto con los datos del usuario a registrar
    * @return El usuario registrado
    * @throws RuntimeException Si el nombre de usuario ya existe
    */
   @Override
   public User registerUser(UserRegisterRequest request) {
-    if (userRepository.existsByUsername(request.getUsername())) {
+    if (userRepository.existsByUsername(request.username())) {
       throw new RuntimeException("Username already exists!");
     }
 
     User user = new User();
-    user.setUsername(request.getUsername());
-    user.setPassword(passwordEncoder.encode(request.getPassword()));
+    user.setUsername(request.username());
+    user.setPassword(passwordEncoder.encode(request.password()));
 
     Set<Role> roles = new HashSet<>();
     Role userRole = roleRepository.findByName("ROLE_USER")

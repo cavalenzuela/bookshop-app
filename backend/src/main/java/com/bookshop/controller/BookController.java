@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -58,17 +59,17 @@ public class BookController {
   @PutMapping("/{isbn}")
   public ResponseEntity<BookDto> createUpdateBook(
       @PathVariable String isbn,
-      @RequestBody BookDto bookDto) {
+      @Valid @RequestBody BookDto bookDto) {
 
     BookEntity bookEntity = bookMapper.mapFrom(bookDto);
+    bookEntity.setIsbn(isbn); // Ensure path ISBN is used
     boolean bookExists = bookService.isExists(isbn);
     BookEntity savedBookEntity = bookService.createUpdateBook(isbn, bookEntity);
     BookDto savedUpdatedBookDto = bookMapper.mapTo(savedBookEntity);
 
     return new ResponseEntity<>(
         savedUpdatedBookDto,
-        bookExists ? HttpStatus.OK : HttpStatus.CREATED
-    );
+        bookExists ? HttpStatus.OK : HttpStatus.CREATED);
   }
 
   /**
@@ -77,13 +78,18 @@ public class BookController {
   @PatchMapping("/{isbn}")
   public ResponseEntity<BookDto> partialUpdateBook(
       @PathVariable("isbn") String isbn,
-      @RequestBody BookDto bookDto
-  ){
-    if(!bookService.isExists(isbn)){
+      @RequestBody BookDto bookDto) {
+    if (!bookService.isExists(isbn)) {
       return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
     BookEntity bookEntity = bookMapper.mapFrom(bookDto);
+    // Partial update merges non-null fields. Service handles logic.
+    // ensure ISBN helps service identify if partialUpdate(isbn, ...) relies on
+    // entity ID.
+    // However, partialUpdate typically uses first arg as ID.
+    // Safe to set ID on entity anyway.
+    bookEntity.setIsbn(isbn);
     BookEntity updatedBookEntity = bookService.partialUpdate(isbn, bookEntity);
     return new ResponseEntity<>(
         bookMapper.mapTo(updatedBookEntity),

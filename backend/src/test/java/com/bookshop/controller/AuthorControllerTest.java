@@ -43,13 +43,12 @@ class AuthorControllerTest {
 
     @BeforeEach
     void setUp() {
-        authorDto = AuthorDto.builder()
-                .id(1L)
-                .name("Test Author")
-                .birthDate(new Date())
-                .nationality("Test Nationality")
-                .biography("Test Biography")
-                .build();
+        authorDto = new AuthorDto(
+                1L,
+                "Test Author",
+                new Date(),
+                "Test Nationality",
+                "Test Biography");
 
         authorEntity = AuthorEntity.builder()
                 .id(1L)
@@ -61,8 +60,10 @@ class AuthorControllerTest {
     }
 
     /**
-     * Verifica que el método createAuthor funcione correctamente al crear un nuevo autor.
-     * Debe mapear el DTO a Entity, guardar el autor y retornar el DTO con estado CREATED.
+     * Verifica que el método createAuthor funcione correctamente al crear un nuevo
+     * autor.
+     * Debe mapear el DTO a Entity, guardar el autor y retornar el DTO con estado
+     * CREATED.
      */
     @Test
     void createAuthor_ShouldCreateNewAuthor() {
@@ -78,8 +79,10 @@ class AuthorControllerTest {
     }
 
     /**
-     * Verifica que el método fullUpdateAuthor actualice completamente un autor existente.
-     * Debe actualizar todos los campos del autor y retornar el DTO actualizado con estado OK.
+     * Verifica que el método fullUpdateAuthor actualice completamente un autor
+     * existente.
+     * Debe actualizar todos los campos del autor y retornar el DTO actualizado con
+     * estado OK.
      */
     @Test
     void fullUpdateAuthor_WhenAuthorExists_ShouldUpdateAuthor() {
@@ -96,7 +99,8 @@ class AuthorControllerTest {
     }
 
     /**
-     * Verifica que el método fullUpdateAuthor retorne NOT_FOUND cuando el autor no existe.
+     * Verifica que el método fullUpdateAuthor retorne NOT_FOUND cuando el autor no
+     * existe.
      * No debe intentar actualizar un autor que no existe en la base de datos.
      */
     @Test
@@ -110,8 +114,10 @@ class AuthorControllerTest {
     }
 
     /**
-     * Verifica que el método partialUpdate actualice parcialmente un autor existente.
-     * Solo actualiza los campos proporcionados en el DTO y retorna el autor actualizado.
+     * Verifica que el método partialUpdate actualice parcialmente un autor
+     * existente.
+     * Solo actualiza los campos proporcionados en el DTO y retorna el autor
+     * actualizado.
      */
     @Test
     void partialUpdate_WhenAuthorExists_ShouldUpdateAuthor() {
@@ -128,7 +134,8 @@ class AuthorControllerTest {
     }
 
     /**
-     * Verifica que el método partialUpdate retorne NOT_FOUND cuando el autor no existe.
+     * Verifica que el método partialUpdate retorne NOT_FOUND cuando el autor no
+     * existe.
      * No debe intentar actualizar un autor inexistente.
      */
     @Test
@@ -142,7 +149,8 @@ class AuthorControllerTest {
     }
 
     /**
-     * Verifica que el método listAuthors retorne correctamente la lista de todos los autores.
+     * Verifica que el método listAuthors retorne correctamente la lista de todos
+     * los autores.
      * Debe mapear todas las entidades a DTOs antes de retornar la lista.
      */
     @Test

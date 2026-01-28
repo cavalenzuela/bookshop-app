@@ -1,10 +1,9 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
-import { of, throwError } from 'rxjs';
+import { of } from 'rxjs';
 import { BookListComponent } from './book-list.component';
 import { BookService } from '../../../services/book.service';
 import { Book } from '../../../models/book.model';
-import { Author } from '../../../models/author.model';
 
 describe('BookListComponent', () => {
   let component: BookListComponent;
@@ -50,17 +49,17 @@ describe('BookListComponent', () => {
   });
 
   it('should initialize with default values', () => {
-    expect(component.books).toEqual([]);
-    expect(component.errorMessage).toBe('');
-    expect(component.isLoading).toBe(true);
+    expect(component.books()).toEqual([]);
+    expect(component.errorMessage()).toBe('');
+    expect(component.isLoading()).toBe(true);
   });
 
   describe('ngOnInit', () => {
     it('should call loadBooks', () => {
       spyOn(component, 'loadBooks');
-      
+
       component.ngOnInit();
-      
+
       expect(component.loadBooks).toHaveBeenCalled();
     });
   });
@@ -68,23 +67,13 @@ describe('BookListComponent', () => {
   describe('loadBooks', () => {
     it('should load books successfully', () => {
       bookService.getBooks.and.returnValue(of(mockBooks));
-      
-      component.loadBooks();
-      
-      expect(bookService.getBooks).toHaveBeenCalled();
-      expect(component.books).toEqual(mockBooks);
-      expect(component.isLoading).toBe(false);
-      expect(component.errorMessage).toBe('');
-    });
 
-    it('should load books successfully', () => {
-      bookService.getBooks.and.returnValue(of(mockBooks));
-      
       component.loadBooks();
-      
+
       expect(bookService.getBooks).toHaveBeenCalled();
-      expect(component.books).toEqual(mockBooks);
-      expect(component.isLoading).toBe(false);
+      expect(component.books()).toEqual(mockBooks);
+      expect(component.isLoading()).toBe(false);
+      expect(component.errorMessage()).toBe('');
     });
   });
 
@@ -92,37 +81,37 @@ describe('BookListComponent', () => {
     it('should delete book when confirmed', () => {
       spyOn(window, 'confirm').and.returnValue(true);
       bookService.deleteBook.and.returnValue(of(undefined));
-      component.books = [...mockBooks];
-      
+      component.books.set([...mockBooks]);
+
       component.deleteBook('1234567890');
-      
+
       expect(window.confirm).toHaveBeenCalledWith('Are you sure you want to delete this book?');
       expect(bookService.deleteBook).toHaveBeenCalledWith('1234567890');
-      expect(component.books.length).toBe(1);
-      expect(component.books[0].isbn).toBe('0987654321');
+      expect(component.books().length).toBe(1);
+      expect(component.books()[0].isbn).toBe('0987654321');
     });
 
     it('should not delete book when not confirmed', () => {
       spyOn(window, 'confirm').and.returnValue(false);
-      component.books = [...mockBooks];
-      
+      component.books.set([...mockBooks]);
+
       component.deleteBook('1234567890');
-      
+
       expect(window.confirm).toHaveBeenCalledWith('Are you sure you want to delete this book?');
       expect(bookService.deleteBook).not.toHaveBeenCalled();
-      expect(component.books.length).toBe(2);
+      expect(component.books().length).toBe(2);
     });
 
     it('should delete book successfully when confirmed', () => {
       spyOn(window, 'confirm').and.returnValue(true);
       bookService.deleteBook.and.returnValue(of(undefined));
-      component.books = [...mockBooks];
-      
+      component.books.set([...mockBooks]);
+
       component.deleteBook('1234567890');
-      
+
       expect(bookService.deleteBook).toHaveBeenCalledWith('1234567890');
-      expect(component.books.length).toBe(1);
-      expect(component.books[0].isbn).toBe('0987654321');
+      expect(component.books().length).toBe(1);
+      expect(component.books()[0].isbn).toBe('0987654321');
     });
   });
 
@@ -146,37 +135,37 @@ describe('BookListComponent', () => {
     });
 
     it('should display loading spinner when isLoading is true', () => {
-      component.isLoading = true;
+      component.isLoading.set(true);
       fixture.detectChanges();
-      
+
       const compiled = fixture.nativeElement as HTMLElement;
       const spinner = compiled.querySelector('.animate-spin');
       expect(spinner).toBeTruthy();
     });
 
     it('should display error message when present', () => {
-      component.errorMessage = 'Error loading books';
-      component.isLoading = false;
+      component.errorMessage.set('Error loading books');
+      component.isLoading.set(false);
       fixture.detectChanges();
-      
+
       const compiled = fixture.nativeElement as HTMLElement;
       const errorMessage = compiled.querySelector('.bg-red-900');
       expect(errorMessage?.textContent).toContain('Error loading books');
     });
 
     it('should display books table when not loading', () => {
-      component.isLoading = false;
+      component.isLoading.set(false);
       fixture.detectChanges();
-      
+
       const compiled = fixture.nativeElement as HTMLElement;
       const table = compiled.querySelector('table');
       expect(table).toBeTruthy();
     });
 
     it('should display table headers', () => {
-      component.isLoading = false;
+      component.isLoading.set(false);
       fixture.detectChanges();
-      
+
       const compiled = fixture.nativeElement as HTMLElement;
       const headers = compiled.querySelectorAll('th');
       expect(headers.length).toBe(4);
@@ -187,18 +176,18 @@ describe('BookListComponent', () => {
     });
 
     it('should display books in table rows', () => {
-      component.isLoading = false;
+      component.isLoading.set(false);
       fixture.detectChanges();
-      
+
       const compiled = fixture.nativeElement as HTMLElement;
       const rows = compiled.querySelectorAll('tbody tr');
       expect(rows.length).toBe(2);
     });
 
     it('should display book data correctly', () => {
-      component.isLoading = false;
+      component.isLoading.set(false);
       fixture.detectChanges();
-      
+
       const compiled = fixture.nativeElement as HTMLElement;
       const firstRow = compiled.querySelector('tbody tr:first-child');
       expect(firstRow?.textContent).toContain('Book 1');
@@ -207,31 +196,31 @@ describe('BookListComponent', () => {
     });
 
     it('should display edit and delete buttons for each book', () => {
-      component.isLoading = false;
+      component.isLoading.set(false);
       fixture.detectChanges();
-      
+
       const compiled = fixture.nativeElement as HTMLElement;
       const allButtons = compiled.querySelectorAll('button');
       const editButtons = Array.from(allButtons).filter(btn => btn.textContent?.includes('Edit'));
       const deleteButtons = Array.from(allButtons).filter(btn => btn.textContent?.includes('Delete'));
-      
+
       expect(editButtons.length).toBe(2);
       expect(deleteButtons.length).toBe(2);
-      
+
       editButtons.forEach(button => {
         expect(button.textContent).toContain('Edit');
       });
-      
+
       deleteButtons.forEach(button => {
         expect(button.textContent).toContain('Delete');
       });
     });
 
     it('should display no books message when books array is empty', () => {
-      component.books = [];
-      component.isLoading = false;
+      component.books.set([]);
+      component.isLoading.set(false);
       fixture.detectChanges();
-      
+
       const compiled = fixture.nativeElement as HTMLElement;
       const noBooksMessage = compiled.querySelector('td[colspan="4"]');
       expect(noBooksMessage?.textContent).toContain('No books found');
@@ -244,10 +233,10 @@ describe('BookListComponent', () => {
         author: null as any,
         category: { id: 1, name: 'Fiction' }
       };
-      component.books = [bookWithoutAuthor];
-      component.isLoading = false;
+      component.books.set([bookWithoutAuthor]);
+      component.isLoading.set(false);
       fixture.detectChanges();
-      
+
       const compiled = fixture.nativeElement as HTMLElement;
       const firstRow = compiled.querySelector('tbody tr:first-child');
       expect(firstRow?.textContent).toContain('No author assigned');
@@ -263,13 +252,13 @@ describe('BookListComponent', () => {
 
     it('should call deleteBook when delete button is clicked', () => {
       spyOn(component, 'deleteBook');
-      
+
       const compiled = fixture.nativeElement as HTMLElement;
       const allButtons = compiled.querySelectorAll('button');
       const deleteButtons = Array.from(allButtons).filter(btn => btn.textContent?.includes('Delete'));
       const firstDeleteButton = deleteButtons[0];
       (firstDeleteButton as HTMLButtonElement)?.click();
-      
+
       expect(component.deleteBook).toHaveBeenCalledWith('1234567890');
     });
   });

@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, signal, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -10,7 +10,7 @@ import { AuthService } from '../../services/auth.service';
   imports: [CommonModule, FormsModule],
   template: `
     <div class="login-container">
-      <h2>{{ isRegistering ? 'Create Account' : 'Login' }}</h2>
+      <h2>{{ isRegistering() ? 'Create Account' : 'Login' }}</h2>
       <div class="form-group">
         <label for="username">Usuario:</label>
         <input type="text" id="username" [(ngModel)]="username" name="username">
@@ -19,10 +19,14 @@ import { AuthService } from '../../services/auth.service';
         <label for="password">Contraseña:</label>
         <input type="password" id="password" [(ngModel)]="password" name="password">
       </div>
-      <div class="error-message" *ngIf="error">{{ error }}</div>
+      
+      @if (error()) {
+        <div class="error-message">{{ error() }}</div>
+      }
+
       <div class="buttons">
-        <button (click)="onSubmit()">{{ isRegistering ? 'Crear Usuario' : 'Login' }}</button>
-        <button (click)="toggleMode()">{{ isRegistering ? 'Volver al Login' : 'Crear Usuario' }}</button>
+        <button (click)="onSubmit()">{{ isRegistering() ? 'Crear Usuario' : 'Login' }}</button>
+        <button (click)="toggleMode()">{{ isRegistering() ? 'Volver al Login' : 'Crear Usuario' }}</button>
       </div>
     </div>
   `,
@@ -107,22 +111,23 @@ import { AuthService } from '../../services/auth.service';
   `]
 })
 export class LoginComponent {
+  private authService = inject(AuthService);
+  private router = inject(Router);
+
+  // Model properties for ngModel (kept mutable)
   username = '';
   password = '';
-  error = '';
-  isRegistering = false;
 
-  constructor(
-    private authService: AuthService,
-    private router: Router
-  ) {}
+  // Signals
+  error = signal<string>('');
+  isRegistering = signal<boolean>(false);
 
   /**
    * Cambia entre el modo login y registro.
    */
   toggleMode() {
-    this.isRegistering = !this.isRegistering;
-    this.error = '';
+    this.isRegistering.update(val => !val);
+    this.error.set('');
   }
 
   /**
@@ -130,28 +135,31 @@ export class LoginComponent {
    */
   onSubmit() {
     if (!this.username || !this.password) {
-      this.error = 'Por favor complete todos los campos';
+      this.error.set('Por favor complete todos los campos');
       return;
     }
 
-    if (this.isRegistering) {
+    if (this.isRegistering()) {
       this.authService.register(this.username, this.password).subscribe({
         next: () => {
-          this.error = '';
-          this.isRegistering = false;
+          this.error.set('');
+          this.isRegistering.set(false);
+          // Optional: clear form
+          this.username = '';
+          this.password = '';
         },
         error: (error) => {
-          this.error = error.error || 'Error al crear usuario';
+          this.error.set(error.error || 'Error al crear usuario');
         }
       });
     } else {
       this.authService.login(this.username, this.password).subscribe({
         next: () => {
-          this.error = '';
+          this.error.set('');
           this.router.navigate(['/home']);
         },
         error: (error) => {
-          this.error = error.error || 'Error al iniciar sesión';
+          this.error.set(error.error || 'Error al iniciar sesión');
         }
       });
     }

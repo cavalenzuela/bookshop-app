@@ -51,13 +51,12 @@ class BookControllerTest {
 
     @BeforeEach
     void setUp() {
-        authorDto = AuthorDto.builder()
-                .id(1L)
-                .name("Test Author")
-                .birthDate(new Date())
-                .nationality("Test Nationality")
-                .biography("Test Biography")
-                .build();
+        authorDto = new AuthorDto(
+                1L,
+                "Test Author",
+                new Date(),
+                "Test Nationality",
+                "Test Biography");
 
         authorEntity = AuthorEntity.builder()
                 .id(1L)
@@ -67,22 +66,20 @@ class BookControllerTest {
                 .biography("Test Biography")
                 .build();
 
-        categoryDto = CategoryDto.builder()
-                .id(1L)
-                .name("Test Category")
-                .build();
+        categoryDto = new CategoryDto(
+                1L,
+                "Test Category");
 
         categoryEntity = CategoryEntity.builder()
                 .id(1L)
                 .name("Test Category")
                 .build();
 
-        bookDto = BookDto.builder()
-                .isbn("1234567890")
-                .title("Test Book")
-                .author(authorDto)
-                .category(categoryDto)
-                .build();
+        bookDto = new BookDto(
+                "1234567890",
+                "Test Book",
+                authorDto,
+                categoryDto);
 
         bookEntity = BookEntity.builder()
                 .isbn("1234567890")
@@ -94,7 +91,8 @@ class BookControllerTest {
 
     /**
      * Verifica que el método createUpdateBook cree un nuevo libro cuando no existe.
-     * Debe mapear el DTO a Entity, crear el libro y retornar el DTO con estado CREATED.
+     * Debe mapear el DTO a Entity, crear el libro y retornar el DTO con estado
+     * CREATED.
      */
     @Test
     void createUpdateBook_WhenBookDoesNotExist_ShouldCreateNewBook() {
@@ -129,8 +127,10 @@ class BookControllerTest {
     }
 
     /**
-     * Verifica que el método partialUpdateBook actualice parcialmente un libro existente.
-     * Solo actualiza los campos proporcionados en el DTO y retorna el libro actualizado.
+     * Verifica que el método partialUpdateBook actualice parcialmente un libro
+     * existente.
+     * Solo actualiza los campos proporcionados en el DTO y retorna el libro
+     * actualizado.
      */
     @Test
     void partialUpdateBook_WhenBookExists_ShouldUpdateBook() {
@@ -147,7 +147,8 @@ class BookControllerTest {
     }
 
     /**
-     * Verifica que el método partialUpdateBook retorne NOT_FOUND cuando el libro no existe.
+     * Verifica que el método partialUpdateBook retorne NOT_FOUND cuando el libro no
+     * existe.
      * No debe intentar actualizar un libro inexistente.
      */
     @Test
@@ -161,7 +162,8 @@ class BookControllerTest {
     }
 
     /**
-     * Verifica que el método listBooks retorne correctamente la lista de todos los libros.
+     * Verifica que el método listBooks retorne correctamente la lista de todos los
+     * libros.
      * Debe mapear todas las entidades a DTOs antes de retornar la lista.
      */
     @Test

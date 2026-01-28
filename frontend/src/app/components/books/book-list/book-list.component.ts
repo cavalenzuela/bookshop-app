@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, signal, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { Book } from '../../../models/book.model';
@@ -16,63 +16,73 @@ import { BookService } from '../../../services/book.service';
       </div>
 
       <!-- Error Message -->
-      <div *ngIf="errorMessage" class="mb-4 p-4 bg-red-900 text-red-200 rounded-lg border border-red-700">
-        {{ errorMessage }}
-      </div>
+      @if (errorMessage()) {
+        <div class="mb-4 p-4 bg-red-900 text-red-200 rounded-lg border border-red-700">
+          {{ errorMessage() }}
+        </div>
+      }
 
       <!-- Loading Spinner -->
-      <div *ngIf="isLoading" class="text-center py-4">
-        <div class="inline-block animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500"></div>
-        <p class="mt-2 text-gray-300">Loading books...</p>
-      </div>
+      @if (isLoading()) {
+        <div class="text-center py-4">
+          <div class="inline-block animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500"></div>
+          <p class="mt-2 text-gray-300">Loading books...</p>
+        </div>
+      }
 
       <!-- Books Table -->
-      <div *ngIf="!isLoading" class="overflow-x-auto">
-        <table class="min-w-full bg-dark-card border border-dark-border rounded-lg">
-          <thead>
-            <tr class="bg-dark-surface">
-              <th class="px-6 py-3 border-b border-dark-border text-left text-gray-300">Title</th>
-              <th class="px-6 py-3 border-b border-dark-border text-left text-gray-300">Author Name</th>
-              <th class="px-6 py-3 border-b border-dark-border text-left text-gray-300">ISBN</th>
-              <th class="px-6 py-3 border-b border-dark-border text-left text-gray-300">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr *ngFor="let book of books" class="hover:bg-dark-surface transition-colors">
-              <td class="px-6 py-4 border-b border-dark-border text-white">{{book.title}}</td>
-              <td class="px-6 py-4 border-b border-dark-border text-white">{{book.author?.name || 'No author assigned'}}</td>
-              <td class="px-6 py-4 border-b border-dark-border text-white">{{book.isbn}}</td>
-              <td class="px-6 py-4 border-b border-dark-border">
-                <button 
-                  [routerLink]="['/books/edit', book.isbn]"
-                  class="text-blue-400 hover:text-blue-300 mr-2 transition-colors">
-                  Edit
-                </button>
-                <button 
-                  (click)="deleteBook(book.isbn)"
-                  class="text-red-400 hover:text-red-300 transition-colors">
-                  Delete
-                </button>
-              </td>
-            </tr>
-            <tr *ngIf="books.length === 0">
-              <td colspan="4" class="px-6 py-4 text-center text-gray-400">
-                No books found
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+      @if (!isLoading()) {
+        <div class="overflow-x-auto">
+          <table class="min-w-full bg-dark-card border border-dark-border rounded-lg">
+            <thead>
+              <tr class="bg-dark-surface">
+                <th class="px-6 py-3 border-b border-dark-border text-left text-gray-300">Title</th>
+                <th class="px-6 py-3 border-b border-dark-border text-left text-gray-300">Author Name</th>
+                <th class="px-6 py-3 border-b border-dark-border text-left text-gray-300">ISBN</th>
+                <th class="px-6 py-3 border-b border-dark-border text-left text-gray-300">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (book of books(); track book.isbn) {
+                <tr class="hover:bg-dark-surface transition-colors">
+                  <td class="px-6 py-4 border-b border-dark-border text-white">{{book.title}}</td>
+                  <td class="px-6 py-4 border-b border-dark-border text-white">{{book.author?.name || 'No author assigned'}}</td>
+                  <td class="px-6 py-4 border-b border-dark-border text-white">{{book.isbn}}</td>
+                  <td class="px-6 py-4 border-b border-dark-border">
+                    <button 
+                      [routerLink]="['/books/edit', book.isbn]"
+                      class="text-blue-400 hover:text-blue-300 mr-2 transition-colors">
+                      Edit
+                    </button>
+                    <button 
+                      (click)="deleteBook(book.isbn)"
+                      class="text-red-400 hover:text-red-300 transition-colors">
+                      Delete
+                    </button>
+                  </td>
+                </tr>
+              } @empty {
+                <tr>
+                  <td colspan="4" class="px-6 py-4 text-center text-gray-400">
+                    No books found
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
     </div>
   `,
   styles: []
 })
 export class BookListComponent implements OnInit {
-  books: Book[] = [];
-  errorMessage: string = '';
-  isLoading: boolean = true;
+  private bookService = inject(BookService);
 
-  constructor(private bookService: BookService) {}
+  // Signals
+  books = signal<Book[]>([]);
+  isLoading = signal<boolean>(true);
+  errorMessage = signal<string>('');
 
   /**
    * Inicializa el componente y carga la lista de libros.
@@ -85,20 +95,20 @@ export class BookListComponent implements OnInit {
    * Carga la lista de libros desde el servicio.
    */
   loadBooks(): void {
-    this.isLoading = true;
-    this.errorMessage = '';
+    this.isLoading.set(true);
+    this.errorMessage.set('');
     
-    this.bookService.getBooks().subscribe(
-      (books) => {
-        this.books = books;
-        this.isLoading = false;
+    this.bookService.getBooks().subscribe({
+      next: (books) => {
+        this.books.set(books);
+        this.isLoading.set(false);
       },
-      (error) => {
-        this.errorMessage = 'Error loading books: ' + error.message;
-        this.isLoading = false;
+      error: (error) => {
+        this.errorMessage.set('Error loading books: ' + error.message);
+        this.isLoading.set(false);
         console.error('Error loading books:', error);
       }
-    );
+    });
   }
 
   /**
@@ -107,15 +117,16 @@ export class BookListComponent implements OnInit {
    */
   deleteBook(isbn: string): void {
     if (confirm('Are you sure you want to delete this book?')) {
-      this.bookService.deleteBook(isbn).subscribe(
-        () => {
-          this.books = this.books.filter(book => book.isbn !== isbn);
+      this.bookService.deleteBook(isbn).subscribe({
+        next: () => {
+          // Actualizamos la señal filtrando el libro eliminado
+          this.books.update(currentBooks => currentBooks.filter(book => book.isbn !== isbn));
         },
-        (error) => {
-          this.errorMessage = 'Error deleting book: ' + error.message;
+        error: (error) => {
+          this.errorMessage.set('Error deleting book: ' + error.message);
           console.error('Error deleting book:', error);
         }
-      );
+      });
     }
   }
 }

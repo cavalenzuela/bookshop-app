@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,7 +19,7 @@ import com.bookshop.services.CategoryService;
  * Proporciona endpoints CRUD bajo el prefijo /api/categories.
  */
 @RestController
-@RequestMapping("/api/categories") // Estandarizado con el prefijo /api
+@RequestMapping("/api/categories")
 public class CategoryController {
 
     private final CategoryService categoryService;
@@ -33,7 +34,7 @@ public class CategoryController {
      * POST /api/categories
      */
     @PostMapping
-    public ResponseEntity<CategoryDto> createCategory(@RequestBody CategoryDto categoryDto) {
+    public ResponseEntity<CategoryDto> createCategory(@Valid @RequestBody CategoryDto categoryDto) {
         CategoryEntity entity = categoryMapper.mapFrom(categoryDto);
         CategoryEntity saved = categoryService.createCategory(entity);
         return new ResponseEntity<>(categoryMapper.mapTo(saved), HttpStatus.CREATED);
@@ -46,7 +47,7 @@ public class CategoryController {
     public ResponseEntity<CategoryDto> getCategory(@PathVariable Long id) {
         Optional<CategoryEntity> category = categoryService.getCategory(id);
         return category.map(entity -> new ResponseEntity<>(categoryMapper.mapTo(entity), HttpStatus.OK))
-            .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
+                .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
     /**
@@ -55,16 +56,19 @@ public class CategoryController {
     @GetMapping
     public List<CategoryDto> listCategories() {
         return categoryService.listCategories().stream()
-            .map(categoryMapper::mapTo)
-            .collect(Collectors.toList());
+                .map(categoryMapper::mapTo)
+                .collect(Collectors.toList());
     }
 
     /**
      * PUT /api/categories/{id}
      */
     @PutMapping("/{id}")
-    public ResponseEntity<CategoryDto> updateCategory(@PathVariable Long id, @RequestBody CategoryDto categoryDto) {
+    public ResponseEntity<CategoryDto> updateCategory(@PathVariable Long id,
+            @Valid @RequestBody CategoryDto categoryDto) {
         CategoryEntity entity = categoryMapper.mapFrom(categoryDto);
+        // Ensure ID is passed correctly, entity might not have ID if DTO didn't have it
+        entity.setId(id);
         CategoryEntity updated = categoryService.updateCategory(id, entity);
         return new ResponseEntity<>(categoryMapper.mapTo(updated), HttpStatus.OK);
     }

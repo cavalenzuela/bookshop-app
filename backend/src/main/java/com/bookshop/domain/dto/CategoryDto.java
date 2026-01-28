@@ -1,15 +1,10 @@
 package com.bookshop.domain.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
-@Builder
-public class CategoryDto {
-    private Long id;
-    private String name;
-} 
+public record CategoryDto(
+        Long id,
+
+        @NotBlank(message = "Name is required") @Size(max = 50, message = "Name must be less than 50 characters") String name) {
+}

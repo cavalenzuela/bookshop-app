@@ -41,25 +41,21 @@ class AuthControllerTest {
 
     @BeforeEach
     void setUp() {
-        loginRequest = new LoginRequest();
-        loginRequest.setUsername("testuser");
-        loginRequest.setPassword("password123");
+        loginRequest = new LoginRequest("testuser", "password123");
 
-        authResponse = new AuthResponse();
-        authResponse.setToken("test-token");
-        authResponse.setMessage("Login successful");
+        authResponse = new AuthResponse("test-token", "testuser", "Login successful");
 
-        registerRequest = new UserRegisterRequest();
-        registerRequest.setUsername("newuser");
-        registerRequest.setPassword("password123");
+        registerRequest = new UserRegisterRequest("newuser", "password123");
 
         user = new User();
         user.setUsername("newuser");
     }
 
     /**
-     * Verifica que el método login funcione correctamente cuando se proporcionan credenciales válidas.
-     * Debe retornar un AuthResponse con un token de autenticación y mensaje de éxito.
+     * Verifica que el método login funcione correctamente cuando se proporcionan
+     * credenciales válidas.
+     * Debe retornar un AuthResponse con un token de autenticación y mensaje de
+     * éxito.
      * Se agrega una linea para verificar github webhook
      */
     @Test
@@ -74,7 +70,8 @@ class AuthControllerTest {
     }
 
     /**
-     * Verifica que el método logout funcione correctamente cuando se proporciona un token válido.
+     * Verifica que el método logout funcione correctamente cuando se proporciona un
+     * token válido.
      * Debe retornar un mensaje de éxito y eliminar la sesión del usuario.
      */
     @Test
@@ -89,7 +86,8 @@ class AuthControllerTest {
     }
 
     /**
-     * Verifica que el método register funcione correctamente cuando se proporcionan datos de registro válidos.
+     * Verifica que el método register funcione correctamente cuando se proporcionan
+     * datos de registro válidos.
      * Debe crear un nuevo usuario y retornar un mensaje de éxito.
      */
     @Test

@@ -17,11 +17,16 @@ public class CategoryMapperImpl implements Mapper<CategoryEntity, CategoryDto> {
 
     @Override
     public CategoryDto mapTo(CategoryEntity entity) {
-        return modelMapper.map(entity, CategoryDto.class);
+        if (entity == null) {
+            return null;
+        }
+        return new CategoryDto(
+                entity.getId(),
+                entity.getName());
     }
 
     @Override
     public CategoryEntity mapFrom(CategoryDto dto) {
         return modelMapper.map(dto, CategoryEntity.class);
     }
-} 
+}

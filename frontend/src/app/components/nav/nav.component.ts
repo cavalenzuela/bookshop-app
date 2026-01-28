@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
@@ -12,16 +12,20 @@ import { AuthService } from '../../services/auth.service';
       <div class="nav-content">
         <div class="nav-left">
           <a routerLink="/home" class="nav-title">Book Shop</a>
-          <div class="nav-links" *ngIf="authService.isLoggedIn()">
-            <a routerLink="/books" routerLinkActive="active">Books</a>
-            <a routerLink="/authors" routerLinkActive="active">Authors</a>
-            <a routerLink="/categories" routerLinkActive="active">Categories</a>
+          @if (authService.isLoggedIn()) {
+            <div class="nav-links">
+              <a routerLink="/books" routerLinkActive="active">Books</a>
+              <a routerLink="/authors" routerLinkActive="active">Authors</a>
+              <a routerLink="/categories" routerLinkActive="active">Categories</a>
+            </div>
+          }
+        </div>
+        @if (authService.isLoggedIn()) {
+          <div class="nav-actions">
+            <span class="username">{{ authService.getUsername() }}</span>
+            <button (click)="logout()">Logout</button>
           </div>
-        </div>
-        <div class="nav-actions" *ngIf="authService.isLoggedIn()">
-          <span class="username">{{ authService.getUsername() }}</span>
-          <button (click)="logout()">Logout</button>
-        </div>
+        }
       </div>
     </nav>
   `,
@@ -96,10 +100,8 @@ import { AuthService } from '../../services/auth.service';
   `]
 })
 export class NavComponent {
-  constructor(
-    public authService: AuthService,
-    private router: Router
-  ) {}
+  public authService = inject(AuthService);
+  private router = inject(Router);
 
   /**
    * Cierra la sesión del usuario y redirige al login.
