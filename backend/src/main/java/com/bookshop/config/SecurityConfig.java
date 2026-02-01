@@ -22,7 +22,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import com.bookshop.security.JwtAuthenticationFilter;
 
 /**
- * Configuración de seguridad definitiva para BookShop API.
+ * Configuración de seguridad ajustada para acceso remoto desde Windows.
  */
 @Configuration
 @EnableWebSecurity
@@ -56,11 +56,10 @@ public class SecurityConfig {
             // 3. Actuator endpoints para healthcheck (Públicos)
             .requestMatchers("/actuator/health/**").permitAll()
 
-            // 4. Todo lo demás (authors, books, categories) requiere Token JWT
+            // 4. Todo lo demás requiere Token JWT
             .anyRequest().authenticated())
         .sessionManagement(session -> session
             .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-        // Añadimos nuestro filtro JWT antes del filtro de autenticación estándar
         .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
     return http.build();
@@ -69,10 +68,17 @@ public class SecurityConfig {
   @Bean
   public CorsConfigurationSource corsConfigurationSource() {
     CorsConfiguration configuration = new CorsConfiguration();
-    // Permitimos el puerto 8080 (Angular) y 8282 (Backend/Swagger)
-    configuration.setAllowedOrigins(List.of("http://localhost:8080", "http://localhost:8282"));
+
+    // AGREGAMOS LA IP DE UBUNTU PARA QUE WINDOWS PUEDA CONECTARSE
+    configuration.setAllowedOrigins(List.of(
+        "http://localhost:8080",
+        "http://localhost:8282",
+        "http://192.168.0.128:8080", // Angular en Ubuntu visto desde Windows
+        "http://192.168.0.128:8282"  // Swagger/Backend en Ubuntu visto desde Windows
+    ));
+
     configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
-    configuration.setAllowedHeaders(List.of("*"));
+    configuration.setAllowedHeaders(List.of("*")); // Permitir todas las cabeceras (incluyendo Authorization)
     configuration.setAllowCredentials(true);
 
     UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
