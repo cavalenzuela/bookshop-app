@@ -1,32 +1,29 @@
 package com.bookshop.mappers.impl;
 
-import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
-
 import com.bookshop.domain.dto.CategoryDto;
 import com.bookshop.domain.entities.CategoryEntity;
 import com.bookshop.mappers.Mapper;
 
 @Component
 public class CategoryMapperImpl implements Mapper<CategoryEntity, CategoryDto> {
-    private final ModelMapper modelMapper;
-
-    public CategoryMapperImpl(ModelMapper modelMapper) {
-        this.modelMapper = modelMapper;
-    }
 
     @Override
     public CategoryDto mapTo(CategoryEntity entity) {
-        if (entity == null) {
-            return null;
-        }
+        if (entity == null) return null;
+
         return new CategoryDto(
-                entity.getId(),
-                entity.getName());
+            entity.getId(),
+            entity.getName());
     }
 
     @Override
     public CategoryEntity mapFrom(CategoryDto dto) {
-        return modelMapper.map(dto, CategoryEntity.class);
+        if (dto == null) return null;
+
+        CategoryEntity entity = new CategoryEntity();
+        entity.setId(dto.id());
+        entity.setName(dto.name());
+        return entity;
     }
 }
