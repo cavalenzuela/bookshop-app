@@ -60,3 +60,8 @@ logs/
 # LSP Cache (Kiro)
 # ====================
 .lsp/
+
+# ====================
+# clj-kondo Cache (Kiro linter)
+# ====================
+.clj-kondo/
