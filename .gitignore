@@ -55,3 +55,8 @@ logs/
 # KIRO (Especificaciones de desarrollo)
 # ====================
 .kiro/
+
+# ====================
+# LSP Cache (Kiro)
+# ====================
+.lsp/
