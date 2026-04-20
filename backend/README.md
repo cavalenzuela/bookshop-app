@@ -12,6 +12,7 @@ sobre un catálogo de libros, con funcionalidades de autenticación y autorizaci
 - **Gestión de Libros**: CRUD completo para el catálogo de libros.
 - **API RESTful**: Interfaz de programación para integración con otros sistemas.
 - **Documentación Interactiva**: Swagger UI integrado para documentación y pruebas de la API.
+- **Caché con Redis**: Implementación de caché para optimizar consultas frecuentes.
 - **Base de Datos PostgreSQL**: Almacenamiento persistente de la información.
 - **Dockerizado**: Fácil despliegue en cualquier entorno con Docker.
 - **Configuración Segura**: Uso de variables de entorno y perfiles de Spring para mayor seguridad.
@@ -96,7 +97,7 @@ La aplicación incluye documentación interactiva de la API utilizando **SpringD
 - **Configuración específica** para entorno de desarrollo
 
 ### Configuración de Swagger
-- **Dependencia**: SpringDoc OpenAPI 2.2.0
+- **Dependencia**: SpringDoc OpenAPI 2.8.0 (Compatible con Spring Boot 3.4)
 - **Configuración**: `OpenApiConfig.java` con metadatos de la API
 - **Seguridad**: Endpoints de Swagger configurados para acceso sin autenticación
 - **CORS**: Configurado para permitir acceso desde localhost:8282
@@ -176,21 +177,22 @@ docker build -t bookshop-springboot -f Dockerfile .
 
 **Nota**: El archivo `.env` está ubicado en `bookshop-app/.env` (carpeta superior)
 
-#### Opción B: Con Docker Compose (recomendado para producción)
+#### Opción B: Con Docker Compose (recomendado)
 
-El archivo `docker-compose.yml` ya está disponible en la **carpeta superior** (`bookshop-app/docker-compose.yml`). Este archivo contiene la configuración completa para ejecutar tanto la base de datos PostgreSQL como la aplicación Spring Boot.
+El archivo `docker-compose.yml` ya está disponible en la **carpeta superior** (`bookshop-app/docker-compose.yml`). Este archivo contiene la configuración completa para ejecutar la infraestructura necesaria.
 
 Para ejecutar con Docker Compose desde la carpeta raíz del proyecto (`bookshop-app/`):
 
 ```bash
-docker-compose up -d
+docker-compose up -d --build
 ```
 
 El archivo `docker-compose.yml` incluye:
-- Servicio **postgres**: Base de datos PostgreSQL 15
-- Servicio **bookshop**: Aplicación Spring Boot
+- Servicio **bookshop-springboot**: Aplicación Spring Boot
+- Servicio **bookshop-angular**: Aplicación Angular (Frontend)
+- Servicio **bookshop-redis**: Motor de caché Redis 7
 - Red compartida entre servicios
-- Volumen persistente para los datos de la base de datos
+- Volúmenes persistentes para datos
 
 ### 3. Verificar que el contenedor está corriendo
 
@@ -233,6 +235,7 @@ Una vez que la aplicación esté corriendo:
 ### Backend
 - **Spring Boot 3.4.1** - Framework principal
 - **Java 21** - Lenguaje de programación (Records, Virtual Threads)
+- **Redis 7** - Motor de caché
 - **Spring Security** - Autenticación y autorización
 - **Spring Data JPA** - Persistencia de datos
 - **PostgreSQL** - Base de datos relacional
@@ -241,7 +244,7 @@ Una vez que la aplicación esté corriendo:
 - **Jakarta Validation** - Validaciones robustas en la capa de API
 
 ### Documentación y Monitoreo
-- **SpringDoc OpenAPI 2.2.0** - Documentación interactiva de la API (Swagger UI)
+- **SpringDoc OpenAPI 2.8.0** - Documentación interactiva de la API (Swagger UI)
 - **Spring Boot Actuator** - Monitoreo y healthchecks
 - **Spring Boot Test** - Framework de testing
 

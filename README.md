@@ -6,6 +6,7 @@ Aplicación full-stack de gestión de librería.
 
 - **Backend**: Java 21 + Spring Boot 3.4.x (Virtual Threads, Records)
 - **Frontend**: Angular 20 (Signals, Zoneless, Control Flow)
+- **Caché**: Redis 7
 - **Base de datos**: PostgreSQL 16
 - **Containerización**: Docker + Docker Compose
 
@@ -89,3 +90,5 @@ El script `database/init.sql` genera las tablas en PostgreSQL.
 - [x] Arquitectura moderna con Java Records y Angular Signals (Zoneless).
 - [x] Manejo global de excepciones y validaciones de API.
 - [x] Soporte para Virtual Threads (Project Loom) en el backend.
+- [x] Caché de datos con Redis para mejorar el rendimiento.
+- [x] Documentación interactiva con Swagger/OpenAPI.

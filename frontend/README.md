@@ -81,8 +81,8 @@ docker run -p 8080:80 bookshop-angular
 - **nginx.conf**: Configuración optimizada de Nginx para SPAs de Angular
 - **.dockerignore**: Excluye archivos innecesarios del contexto de construcción
 
-> **Nota:** Toda la orquestación y configuración relacionada a `docker-compose.yml` ahora se encuentra en el repositorio centralizado [`bookshop-config`].
-> Consulta ese repositorio para levantar el sistema completo con múltiples servicios.
+> **Nota:** La orquestación completa se realiza a través del archivo `docker-compose.yml` en la raíz del proyecto.
+> Consulta ese archivo para levantar el sistema completo (Backend, Frontend y Redis).
 
 ## FLUJO DE DESARROLLO
 
