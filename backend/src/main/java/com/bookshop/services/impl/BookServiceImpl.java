@@ -3,6 +3,8 @@ package com.bookshop.services.impl;
 import com.bookshop.domain.entities.BookEntity;
 import com.bookshop.repositories.BookRepository;
 import com.bookshop.services.BookService;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -28,6 +30,7 @@ public class BookServiceImpl implements BookService {
    * @return El libro creado o actualizado
    */
   @Override
+  @CacheEvict(value = "books", allEntries = true)
   public BookEntity createUpdateBook(String isbn, BookEntity book) {
     book.setIsbn(isbn);
     return bookRepository.save(book);
@@ -38,6 +41,7 @@ public class BookServiceImpl implements BookService {
    * @return Lista de todos los libros existentes
    */
   @Override
+  @Cacheable(value = "books")
   public List<BookEntity> findAll() {
     return StreamSupport
         .stream(
@@ -52,6 +56,7 @@ public class BookServiceImpl implements BookService {
    * @return Página de libros con la configuración especificada
    */
   @Override
+  @Cacheable(value = "books", key = "#pageable.pageNumber + '-' + #pageable.pageSize")
   public Page<BookEntity> findAll(Pageable pageable) {
     return bookRepository.findAll(pageable);
   }
@@ -62,6 +67,7 @@ public class BookServiceImpl implements BookService {
    * @return Optional que contiene el libro encontrado o vacío si no existe
    */
   @Override
+  @Cacheable(value = "books", key = "#isbn")
   public Optional<BookEntity> findOne(String isbn) {
     return bookRepository.findById(isbn);
   }
@@ -84,6 +90,7 @@ public class BookServiceImpl implements BookService {
    * @throws RuntimeException Si el libro no existe
    */
   @Override
+  @CacheEvict(value = "books", allEntries = true)
   public BookEntity partialUpdate(String isbn, BookEntity bookEntity) {
     bookEntity.setIsbn(isbn);
 
@@ -98,6 +105,7 @@ public class BookServiceImpl implements BookService {
    * @param isbn El ISBN del libro a eliminar
    */
   @Override
+  @CacheEvict(value = "books", allEntries = true)
   public void delete(String isbn) {
     bookRepository.deleteById(isbn);
   }

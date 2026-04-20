@@ -5,6 +5,8 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import com.bookshop.domain.entities.AuthorEntity;
@@ -26,6 +28,7 @@ public class AuthorServiceImpl implements AuthorService {
    * @return El autor guardado con su ID asignado
    */
   @Override
+  @CacheEvict(value = "authors", allEntries = true)
   public AuthorEntity save(AuthorEntity authorEntity) {
     return authorRepository.save(authorEntity);
   }
@@ -35,6 +38,7 @@ public class AuthorServiceImpl implements AuthorService {
    * @return Lista de todos los autores existentes
    */
   @Override
+  @Cacheable(value = "authors")
   public List<AuthorEntity> findAll() {
     return StreamSupport.stream(authorRepository
                 .findAll()
@@ -49,6 +53,7 @@ public class AuthorServiceImpl implements AuthorService {
    * @return Optional que contiene el autor encontrado o vacío si no existe
    */
   @Override
+  @Cacheable(value = "authors", key = "#id")
   public Optional<AuthorEntity> findOne(Long id) {
     return authorRepository.findById(id);
   }
@@ -71,6 +76,7 @@ public class AuthorServiceImpl implements AuthorService {
    * @throws RuntimeException Si el autor no existe
    */
   @Override
+  @CacheEvict(value = "authors", allEntries = true)
   public AuthorEntity partialUpdate(Long id, AuthorEntity authorEntity) {
     authorEntity.setId(id);
 
@@ -88,6 +94,7 @@ public class AuthorServiceImpl implements AuthorService {
    * @param id El ID del autor a eliminar
    */
   @Override
+  @CacheEvict(value = "authors", allEntries = true)
   public void delete(Long id) {
     authorRepository.deleteById(id);
   }

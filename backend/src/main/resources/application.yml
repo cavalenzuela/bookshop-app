@@ -3,6 +3,15 @@ spring:
     name: bookshop
   datasource:
     driver-class-name: org.postgresql.Driver
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+  cache:
+    type: redis
+    redis:
+      time-to-live: 600000 # 10 minutos en ms
+      cache-null-values: false
   threads:
     virtual:
       enabled: true

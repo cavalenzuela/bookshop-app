@@ -5,6 +5,8 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import com.bookshop.domain.entities.CategoryEntity;
@@ -20,28 +22,33 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
+    @CacheEvict(value = "categories", allEntries = true)
     public CategoryEntity createCategory(CategoryEntity categoryEntity) {
         return categoryRepository.save(categoryEntity);
     }
 
     @Override
+    @Cacheable(value = "categories", key = "#id")
     public Optional<CategoryEntity> getCategory(Long id) {
         return categoryRepository.findById(id);
     }
 
     @Override
+    @Cacheable(value = "categories")
     public List<CategoryEntity> listCategories() {
         return StreamSupport.stream(categoryRepository.findAll().spliterator(), false)
                 .collect(Collectors.toList());
     }
 
     @Override
+    @CacheEvict(value = "categories", allEntries = true)
     public CategoryEntity updateCategory(Long id, CategoryEntity categoryEntity) {
         categoryEntity.setId(id);
         return categoryRepository.save(categoryEntity);
     }
 
     @Override
+    @CacheEvict(value = "categories", allEntries = true)
     public void deleteCategory(Long id) {
         categoryRepository.deleteById(id);
     }

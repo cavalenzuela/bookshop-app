@@ -1,8 +1,5 @@
-# =============================================================================
-# CONFIGURACIÓN DE DOCKER COMPOSE PARA APLICACIÓN ANGULAR
-# =============================================================================
 # Este archivo define los servicios, redes y volúmenes necesarios para ejecutar la
-# aplicación Angular en un entorno contenerizado usando Docker Compose.
+# aplicación Bookshop en un entorno contenerizado usando Docker Compose.
 #
 # Características:
 # - Orquestación multi-contenedor
@@ -32,10 +29,15 @@ services:
       - DATASOURCE_PASSWORD=${DATASOURCE_PASSWORD}
       - JWT_SECRET=${JWT_SECRET}
       - JWT_EXPIRATION=${JWT_EXPIRATION}
+      - REDIS_HOST=bookshop-redis
+      - REDIS_PORT=6379
     ports:
       - '8282:8282'
     networks:
       - bookshop-network
+    depends_on:
+      bookshop-redis:
+        condition: service_healthy
     security_opt:
       - no-new-privileges:true
     tmpfs:
@@ -73,71 +75,19 @@ services:
       retries: 5
       start_period: 15s
 
-  # =============================================================================
-  # SERVICIOS DE CI/CD
-  # =============================================================================
-
-  # Servicio Jenkins para integración continua
-  jenkins:
-    image: jenkins/jenkins:lts
-    container_name: bookshop-jenkins
+  # Servicio Redis para caché
+  bookshop-redis:
+    image: redis:7-alpine
+    container_name: bookshop-redis
     ports:
-      - '8081:8080'
-      - '50000:50000'
-    volumes:
-      - jenkins_home:/var/jenkins_home
-      - /var/run/docker.sock:/var/run/docker.sock
+      - '6379:6379'
     networks:
       - bookshop-network
-    restart: unless-stopped
-    healthcheck:
-      test: [ 'CMD-SHELL', 'curl -f http://localhost:8080/login || exit 1' ]
-      interval: 30s
-      timeout: 10s
-      retries: 5
-      start_period: 60s
-
-  # Servicio SonarQube para análisis de calidad de código
-  sonarqube:
-    image: sonarqube:community
-    container_name: bookshop-sonarqube
-    ports:
-      - '9000:9000'
     volumes:
-      - sonarqube_data:/opt/sonarqube/data
-      - sonarqube_extensions:/opt/sonarqube/extensions
-      - sonarqube_logs:/opt/sonarqube/logs
-    networks:
-      - bookshop-network
-    environment:
-      - SONAR_JDBC_URL=jdbc:postgresql://sonarqube-db:5432/sonar
-      - SONAR_JDBC_USERNAME=sonar
-      - SONAR_JDBC_PASSWORD=sonar
-    depends_on:
-      - sonarqube-db
+      - redis_data:/data
     restart: unless-stopped
     healthcheck:
-      test: [ 'CMD-SHELL', 'wget --no-verbose --tries=1 --spider http://localhost:9000/api/system/status || exit 1' ]
-      interval: 30s
-      timeout: 10s
-      retries: 5
-      start_period: 90s
-
-  # Base de datos PostgreSQL para SonarQube (uso interno de SonarQube)
-  sonarqube-db:
-    image: postgres:15
-    container_name: bookshop-sonarqube-db
-    volumes:
-      - sonarqube_db:/var/lib/postgresql/data
-    networks:
-      - bookshop-network
-    environment:
-      - POSTGRES_USER=sonar
-      - POSTGRES_PASSWORD=sonar
-      - POSTGRES_DB=sonar
-    restart: unless-stopped
-    healthcheck:
-      test: [ 'CMD-SHELL', 'pg_isready -U sonar' ]
+      test: ["CMD", "redis-cli", "ping"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -163,25 +113,9 @@ networks:
 # DEFINICIÓN DE VOLÚMENES
 # =============================================================================
 # Los volúmenes permiten persistir datos entre reinicios de contenedores
-# Esto es esencial para Jenkins y SonarQube para mantener configuraciones y datos
+# Esto es esencial para que los servicios mantengan configuraciones y datos
 volumes:
-  # Volumen para datos de Jenkins (configuración, jobs, plugins)
-  jenkins_home:
-    driver: local
-
-  # Volumen para datos de SonarQube
-  sonarqube_data:
-    driver: local
-
-  # Volumen para extensiones de SonarQube (plugins)
-  sonarqube_extensions:
-    driver: local
-
-  # Volumen para logs de SonarQube
-  sonarqube_logs:
-    driver: local
-
-  # Volumen para base de datos PostgreSQL de SonarQube
-  sonarqube_db:
+  # Volumen para datos de Redis
+  redis_data:
     driver: local
 
