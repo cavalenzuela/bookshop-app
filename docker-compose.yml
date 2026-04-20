@@ -92,6 +92,25 @@ services:
       timeout: 5s
       retries: 5
 
+  # Herramienta visual para Redis
+  bookshop-redisinsight:
+    image: redis/redisinsight:latest
+    container_name: bookshop-redisinsight
+    user: root
+    ports:
+      - '8001:8001'
+    networks:
+      - bookshop-network
+    volumes:
+      - redisinsight_data:/db
+    environment:
+      - RI_APP_HOST=0.0.0.0
+      - RI_APP_PORT=8001
+    depends_on:
+      bookshop-redis:
+        condition: service_healthy
+    restart: unless-stopped
+
 # =============================================================================
 # DEFINICIÓN DE REDES
 # =============================================================================
@@ -117,5 +136,9 @@ networks:
 volumes:
   # Volumen para datos de Redis
   redis_data:
+    driver: local
+
+  # Volumen para datos de Redis Insight
+  redisinsight_data:
     driver: local
 

@@ -41,6 +41,7 @@ docker-compose up --build
 - **Frontend**: http://localhost:4200
 - **Backend API**: http://localhost:8282
 - **Swagger UI**: http://localhost:8282/swagger-ui.html
+- **Redis Insight**: http://localhost:8001
 - **Base de datos**: localhost:5432
 
 ## 🔧 Comandos Útiles
