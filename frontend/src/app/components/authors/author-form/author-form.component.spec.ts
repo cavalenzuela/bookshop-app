@@ -97,7 +97,7 @@ describe('AuthorFormComponent', () => {
       expect(authorService.getAuthor).toHaveBeenCalledWith(1);
       expect(component.author).toEqual({
         ...mockAuthor,
-        birthDate: '1989-12-29'
+        birthDate: '1989-12-30'
       });
     });
 

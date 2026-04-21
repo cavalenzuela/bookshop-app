@@ -158,9 +158,9 @@ export class AuthorFormComponent implements OnInit {
         // Formatear birthDate a yyyy-MM-dd si existe
         if (author.birthDate) {
           const date = new Date(author.birthDate);
-          const yyyy = date.getFullYear();
-          const mm = String(date.getMonth() + 1).padStart(2, '0');
-          const dd = String(date.getDate()).padStart(2, '0');
+          const yyyy = date.getUTCFullYear();
+          const mm = String(date.getUTCMonth() + 1).padStart(2, '0');
+          const dd = String(date.getUTCDate()).padStart(2, '0');
           author.birthDate = `${yyyy}-${mm}-${dd}`;
         }
         this.author = author;
