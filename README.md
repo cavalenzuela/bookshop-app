@@ -97,24 +97,45 @@ El script `database/init.sql` genera las tablas en PostgreSQL.
 - [x] Integración Continua (CI) con GitHub Actions.
 - [x] Análisis de calidad de código con SonarCloud.
 
-## 🚀 Configuración de CI/CD (GitHub Actions + SonarCloud)
+## 🚀 Infraestructura de CI/CD (GitHub Actions + SonarCloud)
 
-Para que el análisis de SonarCloud funcione en tu repositorio, sigue estos pasos manuales:
+Este proyecto implementa un flujo de **Integración Continua (CI)** profesional que valida automáticamente la calidad y funcionalidad del código en cada cambio.
 
-### 1. Preparación en SonarCloud
-1. Ve a [SonarCloud.io](https://sonarcloud.io/) e inicia sesión con tu cuenta de GitHub.
-2. Crea una nueva Organización (generalmente con tu nombre de usuario de GitHub).
-3. Crea dos proyectos nuevos:
-   - Uno para el backend: `bookshop-app-backend`
-   - Uno para el frontend: `bookshop-app-frontend`
-4. Ve a tu perfil en SonarCloud -> **My Account** -> **Security** y genera un nuevo token llamado `GITHUB_ACTIONS_TOKEN`. Copia este token.
+### 📋 Características del Pipeline
+- **Monorepo Ready**: Análisis independiente para Backend (Java/Maven) y Frontend (Angular).
+- **Servicios bajo demanda**: El pipeline levanta automáticamente contenedores temporales de **PostgreSQL 16** y **Redis 7** para ejecutar tests de integración reales en la nube.
+- **Cumplimiento 2026**: Configurado para usar **Node 24** y estándares modernos de GitHub Actions.
+- **Calidad Profesional**: Integración con **SonarCloud** para detectar bugs, vulnerabilidades y medir la cobertura de tests.
 
-### 2. Configuración en GitHub
-1. Entra a tu repositorio en GitHub.
-2. Ve a **Settings** -> **Secrets and variables** -> **Actions**.
-3. Haz clic en **New repository secret**.
-4. Nombre: `SONAR_TOKEN`.
-5. Valor: Pega el token que copiaste de SonarCloud.
+### 🛠️ Guía de Configuración Paso a Paso
 
-### 3. Ejecución
-Cada vez que hagas un `git push` a la rama `main` o abras un Pull Request, se activará automáticamente el archivo `.github/workflows/ci.yml`. Podrás ver el progreso en la pestaña **Actions** de tu repositorio.
+#### 1. Preparación en SonarCloud.io
+Para mantener el proyecto gratuito y público, se debe realizar una **configuración manual**:
+1. Inicia sesión en [SonarCloud.io](https://sonarcloud.io/) con tu cuenta de GitHub.
+2. **Crear Organización**: Crea una organización con la key `cavalenzuela` (o la que prefieras, pero debe coincidir con el archivo `ci.yml`).
+3. **Creación Manual de Proyectos**: No uses la importación automática. Haz clic en el botón **"+"** -> **Analyze new project** -> **Create project manually**.
+4. Crea dos proyectos con las siguientes llaves exactas:
+   - **Backend**: Name: `bookshop-app-backend`, Key: `cavalenzuela_bookshop-app-backend`
+   - **Frontend**: Name: `bookshop-app-frontend`, Key: `cavalenzuela_bookshop-app-frontend`
+5. **Visibilidad**: Asegúrate de seleccionar **Public** para ambos proyectos.
+6. **Método de Análisis**: En cada proyecto, ve a **Administration** -> **Analysis Method**, desactiva **Automatic Analysis** y selecciona **GitHub Actions**.
+
+#### 2. Generación del Token de Seguridad
+1. En SonarCloud, ve a tu perfil (arriba a la derecha) -> **My Account** -> **Security**.
+2. Genera un nuevo token llamado `GITHUB_ACTIONS_TOKEN` y cópialo.
+
+#### 3. Configuración de Secretos en GitHub
+1. Entra a tu repositorio en GitHub -> **Settings** -> **Secrets and variables** -> **Actions**.
+2. Crea un **New repository secret**:
+   - **Nombre**: `SONAR_TOKEN`
+   - **Valor**: El token que copiaste de SonarCloud.
+
+#### 4. Variables de Entorno en el Pipeline
+El archivo `.github/workflows/ci.yml` ya está preconfigurado con las variables necesarias para los tests:
+- `SPRING_PROFILES_ACTIVE: dev` (para cargar la configuración de base de datos de prueba).
+- `FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true` (para compatibilidad con políticas de 2026).
+
+### 📈 Visualización de Resultados
+Una vez configurado, cada `git push` disparará el flujo. Puedes ver el estado en:
+- **GitHub Actions**: Pestaña "Actions" de tu repositorio (Verifica que el semáforo esté en verde ✅).
+- **SonarCloud Dashboard**: Panel visual con métricas de calidad, duplicación y seguridad.
