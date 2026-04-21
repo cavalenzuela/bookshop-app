@@ -61,7 +61,7 @@ jobs:
           REDIS_PORT: 6379
           JWT_SECRET: test_secret_key_at_least_32_chars_long_for_security_12345
           JWT_EXPIRATION: 3600000
-        run: mvn -f backend/pom.xml clean verify
+        run: mvn -f backend/pom.xml clean verify jacoco:report
 
       - name: Cache SonarCloud packages
         uses: actions/cache@v4
@@ -110,7 +110,7 @@ jobs:
         run: npm run build --prefix frontend -- --configuration production
 
       - name: Run Tests (Headless)
-        run: npm test --prefix frontend -- --watch=false --browsers=ChromeHeadless
+        run: npm test --prefix frontend -- --watch=false --browsers=ChromeHeadless --code-coverage
 
       - name: Analyze with SonarCloud (Frontend)
         uses: SonarSource/sonarcloud-github-action@master
