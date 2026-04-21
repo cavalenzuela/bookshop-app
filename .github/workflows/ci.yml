@@ -1,21 +1,31 @@
+# Nombre del flujo de trabajo que aparecerá en la pestaña "Actions" de GitHub
 name: CI/CD Pipeline
 
+# Definición de los eventos que disparan el pipeline
 on:
   push:
-    branches: [ main, master ]
+    # Se ejecuta cada vez que se suben cambios a la rama master
+    branches: [ master ]
   pull_request:
-    branches: [ main, master ]
+    # Se ejecuta cuando se abre o actualiza un Pull Request hacia master
+    branches: [ master ]
 
+# Variables de entorno globales para todo el pipeline
 env:
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true  # Cumplimiento con políticas de GitHub Actions de 2026
+  # Forza el uso de Node 24 para las acciones internas de GitHub, cumpliendo con estándares de 2026
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 jobs:
+  # =============================================================================
+  # TRABAJO 1: Construcción y Pruebas del Backend (Java/Spring Boot)
+  # =============================================================================
   backend-build:
     name: Backend Build & Test
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-latest # Sistema operativo del servidor de GitHub
     
-    # Servicios necesarios para los tests de integración del backend
+    # Definición de contenedores auxiliares necesarios para los tests de integración
     services:
+      # Base de datos PostgreSQL real para validar persistencia
       postgres:
         image: postgres:16
         env:
@@ -29,6 +39,8 @@ jobs:
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
+      
+      # Servidor Redis real para validar la lógica de caché
       redis:
         image: redis:7-alpine
         ports:
@@ -40,20 +52,23 @@ jobs:
           --health-retries 5
 
     steps:
+      # 1. Descarga el código del repositorio al servidor de GitHub
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 0
+          fetch-depth: 0 # Descarga todo el historial (necesario para SonarCloud)
 
+      # 2. Instala el kit de desarrollo de Java (JDK) versión 21
       - name: Set up JDK 21
         uses: actions/setup-java@v4
         with:
           java-version: '21'
           distribution: 'temurin'
-          cache: 'maven'
+          cache: 'maven' # Cachea dependencias para que la próxima ejecución sea más rápida
 
+      # 3. Compila, ejecuta tests y genera reporte de cobertura con JaCoCo
       - name: Build and Test Backend
         env:
-          SPRING_PROFILES_ACTIVE: dev
+          SPRING_PROFILES_ACTIVE: dev # Activa perfil dev para usar variables de entorno
           DATASOURCE_URL: jdbc:postgresql://localhost:5432/bookshop_test
           DATASOURCE_USERNAME: testuser
           DATASOURCE_PASSWORD: testpassword
@@ -63,6 +78,7 @@ jobs:
           JWT_EXPIRATION: 3600000
         run: mvn -f backend/pom.xml clean verify jacoco:report
 
+      # 4. Optimiza la caché de SonarCloud
       - name: Cache SonarCloud packages
         uses: actions/cache@v4
         with:
@@ -70,10 +86,11 @@ jobs:
           key: ${{ runner.os }}-sonar
           restore-keys: ${{ runner.os }}-sonar
 
+      # 5. Envía los resultados del análisis y la cobertura a SonarCloud
       - name: Analyze with SonarCloud (Backend)
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Token automático de GitHub
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}   # Token manual configurado en Secrets
           SPRING_PROFILES_ACTIVE: dev
           DATASOURCE_URL: jdbc:postgresql://localhost:5432/bookshop_test
           DATASOURCE_USERNAME: testuser
@@ -88,30 +105,39 @@ jobs:
             -Dsonar.organization=cavalenzuela \
             -Dsonar.host.url=https://sonarcloud.io
 
+  # =============================================================================
+  # TRABAJO 2: Construcción y Pruebas del Frontend (Angular)
+  # =============================================================================
   frontend-build:
     name: Frontend Build & Test
     runs-on: ubuntu-latest
     steps:
+      # 1. Descarga el código
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
+      # 2. Instala Node.js versión 24 (Estándar de 2026)
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '24'  # Actualizado a Node 24 para cumplimiento de 2026
+          node-version: '24'
           cache: 'npm'
           cache-dependency-path: frontend/package-lock.json
 
+      # 3. Instala las librerías de Angular (node_modules)
       - name: Install dependencies
         run: npm ci --prefix frontend
 
+      # 4. Compila la aplicación para producción (genera carpeta dist)
       - name: Build Frontend
         run: npm run build --prefix frontend -- --configuration production
 
+      # 5. Ejecuta tests unitarios en modo "Headless" (sin abrir ventana de Chrome)
       - name: Run Tests (Headless)
         run: npm test --prefix frontend -- --watch=false --browsers=ChromeHeadless --code-coverage
 
+      # 6. Envía el análisis del frontend a SonarCloud usando el archivo sonar-project.properties
       - name: Analyze with SonarCloud (Frontend)
         uses: SonarSource/sonarcloud-github-action@master
         env:
