@@ -155,7 +155,7 @@ mvn spring-boot:run
 Para construir la imagen Docker del proyecto, ejecuta desde la raíz del proyecto:
 
 ```bash
-docker build -t bookshop-springboot -f Dockerfile .
+sudo docker build -t bookshop-springboot -f Dockerfile .
 ```
 
 ### 2. Ejecución del Contenedor
@@ -163,7 +163,7 @@ docker build -t bookshop-springboot -f Dockerfile .
 #### Opción A: Ejecución Básica (para pruebas locales)
 
 ```powershell
-  docker run -d --name bookshop-springboot-app -p 8282:8282 --env-file ../\.env bookshop-springboot
+  sudo docker run -d --name bookshop-springboot-app -p 8282:8282 --env-file ../\.env bookshop-springboot
 ```
 
 **Explicación de variables de entorno:**
@@ -184,7 +184,7 @@ El archivo `docker-compose.yml` ya está disponible en la **carpeta superior** (
 Para ejecutar con Docker Compose desde la carpeta raíz del proyecto (`bookshop-app/`):
 
 ```bash
-docker-compose up -d --build
+sudo docker compose up -d --build
 ```
 
 El archivo `docker-compose.yml` incluye:
@@ -198,13 +198,13 @@ El archivo `docker-compose.yml` incluye:
 
 ```powershell
 # Ver contenedores en ejecución
-docker ps
+sudo docker ps
 
 # Ver logs de la aplicación
-docker logs -f bookshop
+sudo docker logs -f bookshop
 
 # Detener el contenedor
-docker stop bookshop
+sudo docker stop bookshop
 ```
 
 ### 4. Acceder a la aplicación

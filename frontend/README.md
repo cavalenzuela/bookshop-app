@@ -65,7 +65,7 @@ Todos los componentes están construidos como componentes standalone con plantil
 # Construir la imagen de producción
 # Desde la raíz del proyecto
 
-docker build -t bookshop-angular .
+sudo docker build -t bookshop-angular .
 ```
 
 ### Ejecución del contenedor Docker
@@ -73,7 +73,7 @@ docker build -t bookshop-angular .
 # Ejecutar el contenedor de producción
 # Mapea el puerto 8080 del host al 80 del contenedor
 
-docker run -p 8080:80 bookshop-angular
+sudo docker run -p 8080:80 bookshop-angular
 ```
 
 ### Archivos de Configuración Docker
@@ -180,10 +180,10 @@ Para despliegue en producción usando Docker:
 
 ```bash
 # Construir imagen de producción
-docker build -t bookshop-angular .
+sudo docker build -t bookshop-angular .
 
 # Ejecutar contenedor de producción
-docker run -p 8080:80 bookshop-angular
+sudo docker run -p 8080:80 bookshop-angular
 ```
 
 ## PRUEBAS
@@ -319,11 +319,11 @@ ng e2e --headless
 
 ### Pruebas en Docker
 ```bash
-# Ejecutar pruebas en contenedor Docker
-docker run --rm bookshop-angular npm test
+# Ejecutar tests unitarios en Docker
+sudo docker run --rm bookshop-angular npm test
 
-# Ejecutar pruebas e2e en Docker
-docker run --rm bookshop-angular npm run e2e
+# Ejecutar tests E2E en Docker
+sudo docker run --rm bookshop-angular npm run e2e
 ```
 
 ### CI/CD Integration
@@ -376,12 +376,12 @@ El proyecto incluye múltiples configuraciones de construcción:
 
 ### Integración CI/CD
 La configuración Docker está lista para pipelines CI/CD:
-```yaml
-# Ejemplo de workflow de GitHub Actions
-- name: Build and Deploy
-  run: |
-    docker build -t bookshop-angular .
-    docker push tu-registro/bookshop-angular
+```bash
+# Construir imagen con tag
+sudo docker build -t bookshop-angular .
+
+# Subir imagen a registro
+sudo docker push tu-registro/bookshop-angular
 ```
 
 ## SOLUCIÓN DE PROBLEMAS
@@ -399,11 +399,11 @@ ng serve --port 4201
 
 #### Problemas de Construcción Docker
 ```bash
-# Limpiar caché de Docker
-docker system prune -a
+# Eliminar imágenes y contenedores huérfanos
+sudo docker system prune -a
 
-# Reconstruir sin caché
-docker build --no-cache -t bookshop-angular .
+# Reconstruir sin usar caché
+sudo docker build --no-cache -t bookshop-angular .
 ```
 
 #### Problemas de Dependencias

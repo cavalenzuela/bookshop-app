@@ -34,7 +34,7 @@ git clone https://github.com/cavalenzuela/bookshop-app.git
 cd bookshop-app
 
 # Iniciar todos los servicios
-docker-compose up --build
+sudo docker compose up --build
 ```
 
 ### Acceder a la aplicación
@@ -48,22 +48,22 @@ docker-compose up --build
 ## 🔧 Comandos Útiles
 ```bash
 # Iniciar servicios
-docker-compose up
+sudo docker compose up
 
 # Iniciar en segundo plano
-docker-compose up -d
+sudo docker compose up -d
 
 # Ver logs
-docker-compose logs -f
+sudo docker compose logs -f
 
 # Reconstruir un servicio específico
-docker-compose up --build backend
+sudo docker compose up --build backend
 
 # Detener servicios
-docker-compose down
+sudo docker compose down
 
 # Limpiar todo (incluyendo volúmenes)
-docker-compose down -v
+sudo docker compose down -v
 ```
 
 ## 📝 Desarrollo Local (sin Docker)
@@ -101,7 +101,33 @@ El script `database/init.sql` genera las tablas en PostgreSQL.
 
 Este proyecto implementa un flujo de **Integración Continua (CI)** profesional que valida automáticamente la calidad y funcionalidad del código en cada cambio.
 
-### 📋 Características del Pipeline
+### � Flujo de Trabajo
+```mermaid
+graph TD
+    A[💻 Desarrollador] -->|git push| B[🐙 GitHub Repository]
+    B -->|Trigger| C[⚙️ GitHub Actions]
+    
+    subgraph "Pipeline de Automatización (Ubuntu 22.04)"
+        C --> D[🐳 Setup Infrastructure]
+        D --> D1[🐘 PostgreSQL 16]
+        D --> D2[🍃 Redis 7]
+        
+        C --> E[☕ Backend Build]
+        E --> E1[mvn verify + JaCoCo]
+        
+        C --> F[🅰️ Frontend Build]
+        F --> F1[npm test + Coverage]
+    end
+    
+    E1 -->|Upload Reports| G[☁️ SonarCloud]
+    F1 -->|Upload Reports| G
+    
+    G --> H{📊 Dashboard de Calidad}
+    H -->|Passed| I[✅ Código Listo para Producción]
+    H -->|Failed| J[❌ Deuda Técnica Detectada]
+```
+
+### �📋 Características del Pipeline
 - **Monorepo Ready**: Análisis independiente para Backend (Java/Maven) y Frontend (Angular).
 - **Servicios bajo demanda**: El pipeline levanta automáticamente contenedores temporales de **PostgreSQL 16** y **Redis 7** para ejecutar tests de integración reales en la nube.
 - **Cumplimiento 2026**: Configurado para usar **Node 24** y estándares modernos de GitHub Actions.
