@@ -1,10 +1,8 @@
 # ====================
 # BACKEND (Java/Spring Boot)
 # ====================
+# Maven Wrapper (mvnw, mvnw.cmd, .mvn/wrapper/*) se versiona; no ignorar.
 backend/target/
-backend/.mvn/
-backend/mvnw
-backend/mvnw.cmd
 backend/*.log
 backend/.classpath
 backend/.project
