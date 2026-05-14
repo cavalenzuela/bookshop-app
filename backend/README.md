@@ -341,25 +341,25 @@ Este diagrama describe el flujo de autenticación y autorización en la aplicaci
 
 ```mermaid
 graph TD
-    subgraph Autenticación (Login)
-        A[Cliente] -- 1. Envía credenciales (usuario/contraseña) a /auth/login --> B(JwtAuthenticationFilter)
-        B -- 2. Delega autenticación --> C{AuthenticationManager}
-        C -- 3. Carga detalles del usuario --> D[CustomUserDetailsService]
-        D -- 4. Consulta tabla 'users' y 'roles' --> E[Base de Datos (PostgreSQL)]
-        E -- 5. Retorna UserDetails --> D
-        D -- 6. Retorna Authentication --> C
-        C -- 7. Autenticación exitosa --> F(JwtTokenProvider)
-        F -- 8. Genera JWT --> B
-        B -- 9. Retorna JWT en la respuesta --> A
+    subgraph "Autenticación (Login)"
+        A[Cliente] -- "1. Envía credenciales (usuario/contraseña) a /auth/login" --> B(JwtAuthenticationFilter)
+        B -- "2. Delega autenticación" --> C{AuthenticationManager}
+        C -- "3. Carga detalles del usuario" --> D[CustomUserDetailsService]
+        D -- "4. Consulta tabla 'users' y 'roles'" --> E[Base de Datos (PostgreSQL)]
+        E -- "5. Retorna UserDetails" --> D
+        D -- "6. Retorna Authentication" --> C
+        C -- "7. Autenticación exitosa" --> F(JwtTokenProvider)
+        F -- "8. Genera JWT" --> B
+        B -- "9. Retorna JWT en la respuesta" --> A
     end
 
-    subgraph Autorización (Solicitudes Protegidas)
-        A -- 10. Envía JWT en el encabezado Authorization (Bearer Token) --> G(JwtAuthenticationFilter)
-        G -- 11. Extrae y valida JWT --> H(JwtTokenProvider)
-        H -- 12. Valida firma, expiración y extrae claims --> G
-        G -- 13. Establece Authentication en SecurityContext --> I{Spring Security Context}
-        I -- 14. Autoriza la solicitud basada en roles --> J[Controlador / Recurso Protegido]
-        J -- 15. Acceso Concedido/Denegado --> A
+    subgraph "Autorización (Solicitudes Protegidas)"
+        A -- "10. Envía JWT en el encabezado Authorization (Bearer Token)" --> G(JwtAuthenticationFilter)
+        G -- "11. Extrae y valida JWT" --> H(JwtTokenProvider)
+        H -- "12. Valida firma, expiración y extrae claims" --> G
+        G -- "13. Establece Authentication en SecurityContext" --> I{Spring Security Context}
+        I -- "14. Autoriza la solicitud basada en roles" --> J[Controlador / Recurso Protegido]
+        J -- "15. Acceso Concedido/Denegado" --> A
     end
 
     style A fill:#f9f,stroke:#333,stroke-width:2px
