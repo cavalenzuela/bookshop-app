@@ -130,22 +130,22 @@ backend/
 
 El proyecto utiliza archivos YAML para la configuración, siguiendo las mejores prácticas de seguridad:
 
-1. **application.yml**: 
-   - Contiene la configuración base del proyecto
-   - No incluye información sensible
-   - Define configuraciones generales de la aplicación
+1.  **application.yml**:
+    - Contiene la configuración base del proyecto
+    - No incluye información sensible
+    - Define configuraciones generales de la aplicación
 
-2. **application-dev.yml**:
-   - Contiene configuración específica para desarrollo
-   - Configuración de base de datos local
-   - Configuración específica de Swagger para desarrollo
-   - Configuración de JWT y otros parámetros sensibles
+2.  **application-dev.yml**:
+    - Contiene configuración específica para desarrollo
+    - Configuración de base de datos local
+    - Configuración específica de Swagger para desarrollo
+    - Configuración de JWT y otros parámetros sensibles
 
-3. **application-prod.yml**:
-   - Contiene configuración específica para producción
-   - Variables de entorno para bases de datos en producción
-   - Configuración de seguridad optimizada para producción
-   - Deshabilitación de Swagger en producción
+3.  **application-prod.yml**:
+    - Contiene configuración específica para producción
+    - Variables de entorno para bases de datos en producción
+    - Configuración de seguridad optimizada para producción
+    - Deshabilitación de Swagger en producción
 
 ### Variables de Entorno
 
@@ -183,14 +183,14 @@ La aplicación incluye documentación interactiva de la API utilizando **SpringD
 
 ### Ejecutar la Aplicación Localmente
 
-1. **Clonar el repositorio**:
+1.  **Clonar el repositorio**:
 ```bash
 git clone https://github.com/cavalenzuela/bookshop-app.git
 cd bookshop-app
 cd backend
 ```
 
-2. **Compilar el proyecto** (Linux / macOS):
+2.  **Compilar el proyecto** (Linux / macOS):
 ```bash
 ./mvnw clean compile
 ```
@@ -201,7 +201,7 @@ En Windows, desde `backend/`:
 .\mvnw.cmd clean compile
 ```
 
-3. **Ejecutar la aplicación**:
+3.  **Ejecutar la aplicación**:
 
 Linux / macOS:
 
@@ -215,20 +215,20 @@ Windows:
 .\mvnw.cmd spring-boot:run
 ```
 
-4. **Acceder a la aplicación**:
+4.  **Acceder a la aplicación**:
 - **API REST**: http://localhost:8282
 - **Swagger UI**: http://localhost:8282/swagger-ui.html
 - **API Docs**: http://localhost:8282/api-docs
 
 ### Usar Swagger UI
 
-1. Abre http://localhost:8282/swagger-ui.html en tu navegador
-2. Explora los endpoints disponibles organizados por tags
-3. Para probar endpoints protegidos:
-   - Primero usa `/auth/register` o `/auth/login` para obtener un token JWT
-   - Haz clic en el botón "Authorize" en Swagger UI
-   - Ingresa: `Bearer <tu-token-jwt>`
-   - Ahora puedes probar todos los endpoints protegidos
+1.  Abre http://localhost:8282/swagger-ui.html en tu navegador
+2.  Explora los endpoints disponibles organizados por tags
+3.  Para probar endpoints protegidos:
+    - Primero usa `/auth/register` o `/auth/login` para obtener un token JWT
+    - Haz clic en el botón "Authorize" en Swagger UI
+    - Ingresa: `Bearer <tu-token-jwt>`
+    - Ahora puedes probar todos los endpoints protegidos
 
 ## Construcción y Despliegue con Docker
 
@@ -334,3 +334,65 @@ Una vez que la aplicación esté corriendo:
 - **Maven Wrapper** - Gestión de dependencias y construcción sin Maven global
 - **Docker** - Containerización
 - **Lombok** - Reducción de código boilerplate
+
+## Flujo de Seguridad (Spring Security + JWT)
+
+Este diagrama describe el flujo de autenticación y autorización en la aplicación, utilizando Spring Security y JSON Web Tokens (JWT).
+
+```mermaid
+graph TD
+    subgraph Autenticación (Login)
+        A[Cliente] -- 1. Envía credenciales (usuario/contraseña) a /auth/login --> B(JwtAuthenticationFilter)
+        B -- 2. Delega autenticación --> C{AuthenticationManager}
+        C -- 3. Carga detalles del usuario --> D[CustomUserDetailsService]
+        D -- 4. Consulta tabla 'users' y 'roles' --> E[Base de Datos (PostgreSQL)]
+        E -- 5. Retorna UserDetails --> D
+        D -- 6. Retorna Authentication --> C
+        C -- 7. Autenticación exitosa --> F(JwtTokenProvider)
+        F -- 8. Genera JWT --> B
+        B -- 9. Retorna JWT en la respuesta --> A
+    end
+
+    subgraph Autorización (Solicitudes Protegidas)
+        A -- 10. Envía JWT en el encabezado Authorization (Bearer Token) --> G(JwtAuthenticationFilter)
+        G -- 11. Extrae y valida JWT --> H(JwtTokenProvider)
+        H -- 12. Valida firma, expiración y extrae claims --> G
+        G -- 13. Establece Authentication en SecurityContext --> I{Spring Security Context}
+        I -- 14. Autoriza la solicitud basada en roles --> J[Controlador / Recurso Protegido]
+        J -- 15. Acceso Concedido/Denegado --> A
+    end
+
+    style A fill:#f9f,stroke:#333,stroke-width:2px
+    style B fill:#bbf,stroke:#333,stroke-width:2px
+    style C fill:#bbf,stroke:#333,stroke-width:2px
+    style D fill:#bbf,stroke:#333,stroke-width:2px
+    style E fill:#ccf,stroke:#333,stroke-width:2px
+    style F fill:#bbf,stroke:#333,stroke-width:2px
+    style G fill:#bbf,stroke:#333,stroke-width:2px
+    style H fill:#bbf,stroke:#333,stroke-width:2px
+    style I fill:#bbf,stroke:#333,stroke-width:2px
+    style J fill:#f9f,stroke:#333,stroke-width:2px
+```
+
+**Explicación del Flujo:**
+
+1.  **Autenticación (Login):**
+    *   El **Cliente** envía sus credenciales (usuario y contraseña) a un endpoint de login (ej. `/auth/login`).
+    *   El **`JwtAuthenticationFilter`** intercepta esta solicitud.
+    *   El filtro delega la autenticación al **`AuthenticationManager`** de Spring Security.
+    *   El `AuthenticationManager` utiliza el **`CustomUserDetailsService`** para cargar los detalles del usuario.
+    *   `CustomUserDetailsService` interactúa con la **Base de Datos (PostgreSQL)** (tablas `users` y `roles`) para verificar las credenciales y obtener la información del usuario y sus roles.
+    *   Si las credenciales son válidas, el `AuthenticationManager` notifica el éxito.
+    *   El **`JwtTokenProvider`** es invocado para generar un JSON Web Token (JWT) que contiene la identidad del usuario y sus roles.
+    *   El `JwtAuthenticationFilter` retorna este JWT al **Cliente** en la respuesta.
+
+2.  **Autorización (Solicitudes Protegidas):**
+    *   Para acceder a recursos protegidos, el **Cliente** incluye el JWT recibido en el encabezado `Authorization` de cada solicitud subsiguiente (como `Bearer <token>`).
+    *   El **`JwtAuthenticationFilter`** intercepta estas solicitudes.
+    *   El filtro extrae el JWT y lo envía al **`JwtTokenProvider`** para su validación.
+    *   `JwtTokenProvider` valida la firma del token, verifica su expiración y extrae la información del usuario (claims).
+    *   Si el token es válido, el `JwtAuthenticationFilter` crea un objeto `Authentication` y lo establece en el **`Spring Security Context`**. Esto significa que Spring Security ahora "sabe" quién es el usuario y qué roles tiene.
+    *   Spring Security, basándose en la información del `SecurityContext` y las configuraciones de autorización (ej. `@PreAuthorize`), determina si el usuario tiene permiso para acceder al **Controlador / Recurso Protegido** solicitado.
+    *   Finalmente, se concede o deniega el acceso al recurso, y la respuesta es enviada de vuelta al **Cliente**.
+
+Este flujo asegura que solo los usuarios autenticados y autorizados puedan acceder a los recursos protegidos de la aplicación.
