@@ -19,12 +19,76 @@ sobre un catálogo de libros, con funcionalidades de autenticación y autorizaci
 
 ## Requisitos Previos
 
-- Docker Desktop instalado en tu sistema
+- Docker Desktop instalado en tu sistema (si usas Docker para levantar servicios)
 - Git (para clonar los repositorios)
-- Mínimo 4GB de RAM asignados a Docker
-- Java 17 o superior (para desarrollo local)
-- Maven 3.6+ (para desarrollo local)
+- Mínimo 4 GB de RAM asignados a Docker (si usas Docker Desktop)
+- **JDK 21** (para compilar y ejecutar el backend; alineado con `pom.xml`)
+- **No es obligatorio** tener Maven instalado en el PATH: el proyecto incluye **Maven Wrapper** (`mvnw` / `mvnw.cmd`)
 - PostgreSQL (para desarrollo local)
+
+## Maven Wrapper
+
+Este backend usa **Maven Wrapper** para que todos usen la **misma versión de Maven** sin instalar Maven globalmente ni depender del bundle de Maven de IntelliJ.
+
+### ¿Qué es Maven Wrapper?
+
+Es un conjunto de scripts y el directorio `.mvn/wrapper/` que, en la primera ejecución, **descargan** la versión de Maven indicada en el proyecto y la ejecutan de forma reproducible.
+
+### Requisito imprescindible
+
+Solo necesitas un **JDK** correctamente instalado (y, en Windows, conviene definir `JAVA_HOME` apuntando al JDK). El wrapper se encarga de Maven.
+
+### Uso desde la carpeta `backend/`
+
+**Linux / macOS**
+
+```bash
+./mvnw clean compile
+./mvnw test
+./mvnw package
+./mvnw spring-boot:run
+```
+
+Si `./mvnw` falla por permisos: `chmod +x mvnw` (el repositorio suele versionar el bit ejecutable).
+
+**Windows (CMD o PowerShell)**
+
+```cmd
+.\mvnw.cmd clean compile
+.\mvnw.cmd test
+.\mvnw.cmd package
+.\mvnw.cmd spring-boot:run
+```
+
+También puedes usar `mvnw.cmd` sin `.\` si tu `PATH` o el directorio actual lo resuelven.
+
+### Archivos del wrapper
+
+| Ruta | Función |
+|------|---------|
+| `mvnw` | Script para Unix / Git Bash |
+| `mvnw.cmd` | Script para Windows |
+| `.mvn/wrapper/maven-wrapper.properties` | Define la distribución de Maven (`distributionUrl`, etc.) |
+| `.mvn/wrapper/maven-wrapper.jar` | Arranque del wrapper (no editar a mano) |
+
+**Versión de Maven fijada en el proyecto:** 3.9.6 (ver `distributionUrl` en `maven-wrapper.properties`).
+
+### Ventajas
+
+- No requiere Maven instalado en el sistema.
+- No depende del Maven embebido del IDE.
+- Misma versión de Maven para CI, compañeros y máquinas locales.
+- La primera ejecución descarga Maven en la caché del usuario (por ejemplo bajo `~/.m2/wrapper` en Unix o el equivalente en Windows).
+
+### Cambiar la versión de Maven
+
+Edita `.mvn/wrapper/maven-wrapper.properties` y actualiza `distributionUrl`, por ejemplo:
+
+```properties
+distributionUrl=https://repo.maven.apache.org/maven2/org/apache/maven/apache-maven/3.9.7/apache-maven-3.9.7-bin.zip
+```
+
+La próxima vez que ejecutes el wrapper se usará la nueva versión.
 
 ## Estructura del Proyecto
 
@@ -48,7 +112,10 @@ backend/
 │       └── java/com/bookshop/
 │           ├── controller/          # Tests de controladores
 │           └── ...
+├── .mvn/wrapper/          # Maven Wrapper (versión de Maven y JAR de arranque)
 ├── target/                # Archivos compilados (generado automáticamente)
+├── mvnw                   # Script wrapper (Linux / macOS / Git Bash)
+├── mvnw.cmd               # Script wrapper (Windows)
 ├── .dockerignore         # Archivos ignorados por Docker
 ├── Dockerfile            # Configuración para construir la imagen Docker
 ├── pom.xml              # Configuración de Maven y dependencias
@@ -109,9 +176,9 @@ La aplicación incluye documentación interactiva de la API utilizando **SpringD
 ## Desarrollo Local
 
 ### Requisitos para Desarrollo
-- Java 17 o superior
-- Maven 3.6+
-- PostgreSQL ejecutándose en localhost:5434
+- **JDK 21**
+- **Maven Wrapper** (incluido en el repo; no necesitas `mvn` instalado)
+- PostgreSQL ejecutándose en localhost:5434 (o el puerto que uses en tu `.env`)
 - Base de datos `bookshop` creada
 
 ### Ejecutar la Aplicación Localmente
@@ -123,14 +190,29 @@ cd bookshop-app
 cd backend
 ```
 
-2. **Compilar el proyecto**:
+2. **Compilar el proyecto** (Linux / macOS):
 ```bash
-mvn clean compile
+./mvnw clean compile
+```
+
+En Windows, desde `backend/`:
+
+```cmd
+.\mvnw.cmd clean compile
 ```
 
 3. **Ejecutar la aplicación**:
+
+Linux / macOS:
+
 ```bash
-mvn spring-boot:run
+./mvnw spring-boot:run
+```
+
+Windows:
+
+```cmd
+.\mvnw.cmd spring-boot:run
 ```
 
 4. **Acceder a la aplicación**:
@@ -249,6 +331,6 @@ Una vez que la aplicación esté corriendo:
 - **Spring Boot Test** - Framework de testing
 
 ### Herramientas de Desarrollo
-- **Maven** - Gestión de dependencias y construcción
+- **Maven Wrapper** - Gestión de dependencias y construcción sin Maven global
 - **Docker** - Containerización
 - **Lombok** - Reducción de código boilerplate
